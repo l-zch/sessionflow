@@ -27,20 +27,20 @@ public class SessionMapperImpl implements SessionMapper {
             return null;
         }
 
-        var logs = session.logs != null && !session.logs.isEmpty()
-                ? sessionLogMapper.toDtoList(session.logs)
+        var logs = session.getLogs() != null && !session.getLogs().isEmpty()
+                ? sessionLogMapper.toDtoList(session.getLogs())
                 : null;
 
         return new SessionDto(
-                session.id,
-                session.task.id,
-                session.date,
-                session.startTime,
-                session.endTime,
-                session.canPlay,
+                session.getId(),
+                session.getTask().getId(),
+                session.getDate(),
+                session.getStartTime(),
+                session.getEndTime(),
+                session.isCanPlay(),
                 logs,
-                session.createdAt,
-                session.updatedAt);
+                session.getCreatedAt(),
+                session.getUpdatedAt());
     }
 
     @Override

@@ -23,12 +23,12 @@ public class SessionLogMapperImpl implements SessionLogMapper {
         }
 
         return new SessionLogDto(
-                sessionLog.id,
-                sessionLog.session.id,
-                sessionLog.start,
-                sessionLog.end,
-                sessionLog.duration,
-                sessionLog.note);
+                sessionLog.getId(),
+                sessionLog.getSession().getId(),
+                sessionLog.getStartTime(),
+                sessionLog.getEndTime(),
+                sessionLog.getDuration(),
+                sessionLog.getNote());
     }
 
     @Override
@@ -38,8 +38,8 @@ public class SessionLogMapperImpl implements SessionLogMapper {
         }
 
         SessionLog.SessionLogBuilder builder = SessionLog.builder()
-                .start(sessionLogDto.start())
-                .end(sessionLogDto.end())
+                .startTime(sessionLogDto.startTime())
+                .endTime(sessionLogDto.endTime())
                 .duration(sessionLogDto.duration())
                 .note(sessionLogDto.note());
 

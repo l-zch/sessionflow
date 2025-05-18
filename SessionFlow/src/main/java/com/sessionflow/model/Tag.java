@@ -2,7 +2,9 @@ package com.sessionflow.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -13,17 +15,19 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
-    public String name;
+    private String name;
 
-    public String color;
+    private String color;
 
     @ManyToMany(mappedBy = "tags")
-    public Set<Task> tasks = new HashSet<>();
+    private Set<Task> tasks = new HashSet<>();
 }

@@ -37,7 +37,7 @@ public class TaskServiceImpl implements TaskService {
         if (status != null && parentId != null) {
             // Filter by both status and parentId
             tasks = taskRepository.findAll().stream()
-                    .filter(t -> t.status == status && (t.parent != null && t.parent.id.equals(parentId)))
+                    .filter(t -> t.getStatus() == status && (t.getParent() != null && t.getParent().getId().equals(parentId)))
                     .toList();
         } else if (status != null) {
             // Filter by status only
@@ -70,27 +70,27 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
 
         // Update the fields
-        existingTask.title = taskDto.title();
+        existingTask.setTitle(taskDto.title());
         if (taskDto.description() != null) {
-            existingTask.description = taskDto.description();
+            existingTask.setDescription(taskDto.description());
         }
         if (taskDto.estimatedDuration() != null) {
-            existingTask.estimatedDuration = taskDto.estimatedDuration();
+            existingTask.setEstimatedDuration(taskDto.estimatedDuration());
         }
         if (taskDto.status() != null) {
-            existingTask.status = taskDto.status();
+            existingTask.setStatus(taskDto.status());
         }
 
         // Handle parent relationship if changed
         if (taskDto.parentId() != null &&
-                (existingTask.parent == null || !existingTask.parent.id.equals(taskDto.parentId()))) {
+                (existingTask.getParent() == null || !existingTask.getParent().getId().equals(taskDto.parentId()))) {
             Task parent = taskRepository.findById(taskDto.parentId())
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Parent task not found with ID: " + taskDto.parentId()));
-            existingTask.parent = parent;
-        } else if (taskDto.parentId() == null && existingTask.parent != null) {
+            existingTask.setParent(parent);
+        } else if (taskDto.parentId() == null && existingTask.getParent() != null) {
             // Remove parent relationship
-            existingTask.parent = null;
+            existingTask.setParent(null);
         }
 
         Task updatedTask = taskRepository.save(existingTask);

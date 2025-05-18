@@ -13,7 +13,7 @@ public interface SessionLogRepository extends JpaRepository<SessionLog, Long> {
     
     List<SessionLog> findBySessionId(Long sessionId);
     
-    @Query("SELECT sl FROM SessionLog sl WHERE sl.session.id = :sessionId ORDER BY sl.start ASC")
+    @Query("SELECT sl FROM SessionLog sl WHERE sl.session.id = :sessionId ORDER BY sl.startTime ASC")
     List<SessionLog> findBySessionIdOrderByStartAsc(@Param("sessionId") Long sessionId);
     
     @Query("SELECT sl FROM SessionLog sl WHERE sl.session.task.id = :taskId")

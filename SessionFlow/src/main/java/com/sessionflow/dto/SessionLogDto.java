@@ -8,9 +8,9 @@ public record SessionLogDto(
 
         @NotNull(message = "Session ID is required") Long sessionId,
 
-        @NotNull(message = "Start time is required") LocalDateTime start,
+        @NotNull(message = "Start time is required") LocalDateTime startTime,
 
-        LocalDateTime end,
+        LocalDateTime endTime,
 
         Long duration, // in seconds
 

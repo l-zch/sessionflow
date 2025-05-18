@@ -36,7 +36,7 @@ public class SessionLogServiceImpl implements SessionLogService {
         // Create a new session log with current time as start
         SessionLog sessionLog = SessionLog.builder()
                 .session(session)
-                .start(LocalDateTime.now())
+                .startTime(LocalDateTime.now())
                 .build();
 
         SessionLog savedLog = sessionLogRepository.save(sessionLog);
@@ -50,17 +50,17 @@ public class SessionLogServiceImpl implements SessionLogService {
                 .orElseThrow(() -> new ResourceNotFoundException("Session log not found with ID: " + id));
 
         // Update the fields
-        if (sessionLogDto.end() != null) {
-            existingLog.end = sessionLogDto.end();
+        if (sessionLogDto.endTime() != null) {
+            existingLog.setEndTime(sessionLogDto.endTime());
         }
 
         if (sessionLogDto.note() != null) {
-            existingLog.note = sessionLogDto.note();
+            existingLog.setNote(sessionLogDto.note());
         }
 
         // If manually setting duration
         if (sessionLogDto.duration() != null) {
-            existingLog.duration = sessionLogDto.duration();
+            existingLog.setDuration(sessionLogDto.duration());
         }
 
         SessionLog updatedLog = sessionLogRepository.save(existingLog);

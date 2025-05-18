@@ -55,16 +55,16 @@ public class SessionServiceImpl implements SessionService {
 
         // Update the fields
         if (sessionDto.date() != null) {
-            existingSession.date = sessionDto.date();
+            existingSession.setDate(sessionDto.date());
         }
         if (sessionDto.startTime() != null) {
-            existingSession.startTime = sessionDto.startTime();
+            existingSession.setStartTime(sessionDto.startTime());
         }
         if (sessionDto.endTime() != null) {
-            existingSession.endTime = sessionDto.endTime();
+            existingSession.setEndTime(sessionDto.endTime());
         }
 
-        existingSession.canPlay = sessionDto.canPlay();
+        existingSession.setCanPlay(sessionDto.canPlay());
 
         Session updatedSession = sessionRepository.save(existingSession);
         return sessionMapper.toDto(updatedSession);

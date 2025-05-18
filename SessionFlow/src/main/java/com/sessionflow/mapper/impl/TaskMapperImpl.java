@@ -23,26 +23,26 @@ public class TaskMapperImpl implements TaskMapper {
         }
 
         Long parentId = null;
-        if (task.parent != null) {
-            parentId = task.parent.id;
+        if (task.getParent() != null) {
+            parentId = task.getParent().getId();
         }
 
         List<TaskDto> children = null;
-        if (task.children != null && !task.children.isEmpty()) {
-            children = toDtoList(task.children);
+        if (task.getChildren() != null && !task.getChildren().isEmpty()) {
+            children = toDtoList(task.getChildren());
         }
 
         return new TaskDto(
-                task.id,
-                task.title,
-                task.description,
-                task.estimatedDuration,
-                task.status,
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getEstimatedDuration(),
+                task.getStatus(),
                 parentId,
                 children,
                 null, // tags would be mapped by a TagMapper
-                task.createdAt,
-                task.updatedAt);
+                task.getCreatedAt(),
+                task.getUpdatedAt());
     }
 
     @Override

@@ -2,7 +2,9 @@ package com.sessionflow.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -16,36 +18,38 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class Session {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", nullable = false)
-    public Task task;
+    private Task task;
 
     @Column(nullable = false)
-    public LocalDate date;
+    private LocalDate date;
 
     @Column(nullable = false)
-    public LocalTime startTime;
+    private LocalTime startTime;
 
     @Column(nullable = false)
-    public LocalTime endTime;
+    private LocalTime endTime;
 
     @Column(nullable = false)
-    public boolean canPlay;
+    private boolean canPlay;
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
-    public List<SessionLog> logs = new ArrayList<>();
+    private List<SessionLog> logs = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
-    public LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    public LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {

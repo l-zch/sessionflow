@@ -14,7 +14,7 @@
 ### 2.1 Task
 
 -   建立／更新／刪除任務
--   查詢所有任務, 可依狀態 (pending/completed) 過濾
+-   查詢所有任務, 可依狀態 (PENDING/COMPLETE) 過濾
 
 ### 2.2 Session
 
@@ -51,7 +51,7 @@ Task {
   dueTime?: LocalDateTime;
   completedAt?: LocalDateTime;
   note?: String;
-  status: 'complete' | 'pending';
+  status: 'COMPLETE' | 'PENDING';
   createdAt: LocalDateTime;
   updatedAt: LocalDateTime;
 }
@@ -76,7 +76,7 @@ TaskResponse {
   dueTime?: LocalDateTime;
   completedAt?: LocalDateTime;
   note?: String;
-  status: 'complete' | 'pending';
+  status: 'COMPLETE' | 'PENDING';
 }
 ```
 
@@ -242,7 +242,7 @@ TagResponse {
   "dueTime": "2024-01-15T18:00:00",
   "completedAt": null,
   "note": "需要包含技術規格和使用者手冊",
-  "status": "pending"
+  "status": "PENDING"
 }
 ```
 
@@ -251,11 +251,11 @@ TagResponse {
 - **路徑**: `/api/tasks`
 - **描述**: 查詢所有任務，可依狀態過濾
 - **查詢參數**: 
-  - `status` (可選): `pending` | `complete`
+  - `status` (可選): `PENDING` | `COMPLETE`
 - **HTTP 狀態碼**: `200 OK`
 - **回應體**: `List<TaskResponse>`
 
-**請求範例**: `GET /api/tasks?status=pending`
+**請求範例**: `GET /api/tasks?status=PENDING`
 
 **回應範例**:
 ```json
@@ -269,7 +269,7 @@ TagResponse {
     "dueTime": "2024-01-15T18:00:00",
     "completedAt": null,
     "note": "需要包含技術規格和使用者手冊",
-    "status": "pending"
+    "status": "PENDING"
   }
 ]
 ```

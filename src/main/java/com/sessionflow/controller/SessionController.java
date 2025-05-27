@@ -1,54 +1,76 @@
 package com.sessionflow.controller;
 
-import com.sessionflow.dto.SessionDto;
+import com.sessionflow.dto.SessionRecordCreateRequest;
+import com.sessionflow.dto.SessionRecordResponse;
+import com.sessionflow.dto.SessionRequest;
+import com.sessionflow.dto.SessionResponse;
 import com.sessionflow.service.SessionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/sessions")
+@RequiredArgsConstructor
+@Slf4j
+@Tag(name = "Session", description = "工作階段管理 API")
 public class SessionController {
-
-    @Autowired
-    private SessionService sessionService;
-
+    
+    private final SessionService sessionService;
+    
     @PostMapping
-    public ResponseEntity<SessionDto> createSession(@Valid @RequestBody SessionDto sessionDto) {
-        SessionDto createdSession = sessionService.createSession(sessionDto);
-        return new ResponseEntity<>(createdSession, HttpStatus.CREATED);
+    @Operation(summary = "建立工作階段", description = "建立新的工作階段")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "工作階段建立成功"),
+        @ApiResponse(responseCode = "400", description = "請求參數錯誤")
+    })
+    public ResponseEntity<SessionResponse> createSession(
+            @Valid @RequestBody SessionRequest request) {
+        
+        log.info("Received request to create session: {}", request.getTitle());
+        
+        SessionResponse response = sessionService.createSession(request);
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
+    
     @GetMapping
-    public ResponseEntity<List<SessionDto>> getSessionsByDate(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<SessionDto> sessions = sessionService.getSessionsByDate(date);
-        return ResponseEntity.ok(sessions);
+    @Operation(summary = "查詢所有工作階段", description = "查詢目前所有存在的工作階段")
+    @ApiResponse(responseCode = "200", description = "查詢成功")
+    public ResponseEntity<List<SessionResponse>> getAllSessions() {
+        
+        log.info("Received request to get all sessions");
+        
+        List<SessionResponse> responses = sessionService.getAllSessions();
+        
+        return ResponseEntity.ok(responses);
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<SessionDto> getSessionById(@PathVariable Long id) {
-        SessionDto session = sessionService.getSessionById(id);
-        return ResponseEntity.ok(session);
+    
+    @PostMapping("/{id}/end")
+    @Operation(summary = "結束工作階段", description = "結束工作階段並建立 SessionRecord")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "工作階段結束成功，SessionRecord 已建立"),
+        @ApiResponse(responseCode = "404", description = "工作階段不存在"),
+        @ApiResponse(responseCode = "400", description = "請求參數錯誤")
+    })
+    public ResponseEntity<SessionRecordResponse> endSession(
+            @Parameter(description = "工作階段 ID") @PathVariable Long id,
+            @Valid @RequestBody SessionRecordCreateRequest request) {
+        
+        log.info("Received request to end session: {}", id);
+        
+        SessionRecordResponse response = sessionService.endSession(id, request);
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<SessionDto> updateSession(
-            @PathVariable Long id,
-            @Valid @RequestBody SessionDto sessionDto) {
-        SessionDto updatedSession = sessionService.updateSession(id, sessionDto);
-        return ResponseEntity.ok(updatedSession);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSession(@PathVariable Long id) {
-        sessionService.deleteSession(id);
-        return ResponseEntity.noContent().build();
-    }
-}
+} 

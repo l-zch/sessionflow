@@ -1,34 +1,30 @@
 package com.sessionflow.service;
 
-import com.sessionflow.dto.SessionDto;
+import com.sessionflow.dto.SessionRecordCreateRequest;
+import com.sessionflow.dto.SessionRecordResponse;
+import com.sessionflow.dto.SessionRequest;
+import com.sessionflow.dto.SessionResponse;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface SessionService {
-
+    
     /**
-     * Create a new session
+     * 建立工作階段
      */
-    SessionDto createSession(SessionDto sessionDto);
-
+    SessionResponse createSession(SessionRequest request);
+    
     /**
-     * Get sessions for a specific date
+     * 查詢所有目前存在的工作階段
      */
-    List<SessionDto> getSessionsByDate(LocalDate date);
-
+    List<SessionResponse> getAllSessions();
+    
     /**
-     * Get a single session by ID with its logs
+     * 結束工作階段並建立 SessionRecord
+     * - 根據 ID 找出 Session
+     * - 建立對應 SessionRecord（從 Session 帶入 title、task、note 為 plannedNote）
+     * - 自動刪除該 Session
+     * - 回傳 SessionRecordResponse
      */
-    SessionDto getSessionById(Long id);
-
-    /**
-     * Update an existing session
-     */
-    SessionDto updateSession(Long id, SessionDto sessionDto);
-
-    /**
-     * Delete a session and its logs
-     */
-    void deleteSession(Long id);
-}
+    SessionRecordResponse endSession(Long sessionId, SessionRecordCreateRequest request);
+} 

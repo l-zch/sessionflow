@@ -1,34 +1,34 @@
 package com.sessionflow.service;
 
-import com.sessionflow.dto.TaskDto;
-import com.sessionflow.model.Task;
+import com.sessionflow.dto.TaskRequest;
+import com.sessionflow.dto.TaskResponse;
 
 import java.util.List;
 
 public interface TaskService {
-
+    
     /**
-     * Create a new task
+     * 建立新任務
      */
-    TaskDto createTask(TaskDto taskDto);
-
+    TaskResponse createTask(TaskRequest taskRequest);
+    
     /**
-     * Get all tasks, optionally filtered by status and parentId
+     * 查詢所有任務，可依狀態篩選
      */
-    List<TaskDto> getAllTasks(Task.TaskStatus status, Long parentId);
-
+    List<TaskResponse> getAllTasks(String status);
+    
     /**
-     * Get a single task by ID with its children
+     * 根據 ID 更新任務
      */
-    TaskDto getTaskById(Long id);
-
+    TaskResponse updateTask(Long id, TaskRequest taskRequest);
+    
     /**
-     * Update an existing task
-     */
-    TaskDto updateTask(Long id, TaskDto taskDto);
-
-    /**
-     * Delete a task and its children
+     * 根據 ID 刪除任務
      */
     void deleteTask(Long id);
-}
+    
+    /**
+     * 標記任務為完成
+     */
+    TaskResponse completeTask(Long id);
+} 

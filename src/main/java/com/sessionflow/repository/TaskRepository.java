@@ -1,6 +1,7 @@
 package com.sessionflow.repository;
 
 import com.sessionflow.model.Task;
+import com.sessionflow.model.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,16 +11,21 @@ import java.util.List;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
-
-    List<Task> findByStatus(Task.TaskStatus status);
     
-    List<Task> findByParentId(Long parentId);
+    /**
+     * 根據狀態查詢任務
+     */
+    List<Task> findByStatus(TaskStatus status);
     
-    List<Task> findByParentIsNull();
+    /**
+     * 查詢所有任務並按創建時間降序排列
+     */
+    @Query("SELECT t FROM Task t ORDER BY t.createdAt DESC")
+    List<Task> findAllOrderByCreatedAtDesc();
     
-    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.children WHERE t.id = :id")
-    Task findByIdWithChildren(@Param("id") Long id);
-    
-    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags WHERE t.id = :id")
-    Task findByIdWithTags(@Param("id") Long id);
+    /**
+     * 根據狀態查詢任務並按創建時間降序排列
+     */
+    @Query("SELECT t FROM Task t WHERE t.status = :status ORDER BY t.createdAt DESC")
+    List<Task> findByStatusOrderByCreatedAtDesc(@Param("status") TaskStatus status);
 } 

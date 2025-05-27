@@ -1,90 +1,98 @@
 package com.sessionflow.mapper.impl;
 
-import com.sessionflow.dto.SessionDto;
-import com.sessionflow.dto.SessionLogDto;
-import com.sessionflow.mapper.SessionLogMapper;
+import com.sessionflow.dto.SessionRequest;
+import com.sessionflow.dto.SessionResponse;
 import com.sessionflow.mapper.SessionMapper;
 import com.sessionflow.model.Session;
+import com.sessionflow.model.Task;
 import com.sessionflow.repository.TaskRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class SessionMapperImpl implements SessionMapper {
-
-    @Autowired
-    private TaskRepository taskRepository;
-
-    @Autowired
-    private SessionLogMapper sessionLogMapper;
-
+    
+    private final TaskRepository taskRepository;
+    
     @Override
-    public SessionDto toDto(Session session) {
+    public Session toEntity(SessionRequest request) {
+        if (request == null) {
+            return null;
+        }
+        
+        Session session = new Session(request.getTitle());
+        session.setEndReminder(request.getEndReminder());
+        session.setNote(request.getNote());
+        
+        // 處理任務關聯
+        if (request.getTaskId() != null) {
+            Task task = taskRepository.findById(request.getTaskId())
+                    .orElse(null);
+            if (task != null) {
+                session.setTask(task);
+                log.debug("Associated session with task: {}", task.getId());
+            } else {
+                log.warn("Task with id {} not found, session will not be associated with any task", request.getTaskId());
+            }
+        }
+        
+        return session;
+    }
+    
+    @Override
+    public SessionResponse toResponse(Session session) {
         if (session == null) {
             return null;
         }
-
-        var logs = session.getLogs() != null && !session.getLogs().isEmpty()
-                ? sessionLogMapper.toDtoList(session.getLogs())
-                : null;
-
-        return new SessionDto(
-                session.getId(),
-                session.getTask().getId(),
-                session.getDate(),
-                session.getStartTime(),
-                session.getEndTime(),
-                session.isCanPlay(),
-                logs,
-                session.getCreatedAt(),
-                session.getUpdatedAt());
-    }
-
-    @Override
-    public Session toEntity(SessionDto sessionDto) {
-        if (sessionDto == null) {
-            return null;
+        
+        SessionResponse response = new SessionResponse();
+        response.setId(session.getId());
+        response.setTitle(session.getTitle());
+        response.setEndReminder(session.getEndReminder());
+        response.setNote(session.getNote());
+        
+        // 設定任務 ID
+        if (session.getTask() != null) {
+            response.setTaskId(session.getTask().getId());
         }
-
-        Session.SessionBuilder builder = Session.builder()
-                .date(sessionDto.date())
-                .startTime(sessionDto.startTime())
-                .endTime(sessionDto.endTime())
-                .canPlay(sessionDto.canPlay());
-
-        // Set the task relationship
-        if (sessionDto.taskId() != null) {
-            builder.task(taskRepository.findById(sessionDto.taskId())
-                    .orElseThrow(() -> new IllegalArgumentException("Task not found with ID: " + sessionDto.taskId())));
-        }
-
-        // Logs will be handled separately when session is saved
-
-        return builder.build();
+        
+        return response;
     }
-
+    
     @Override
-    public List<SessionDto> toDtoList(List<Session> sessions) {
+    public List<SessionResponse> toResponseList(List<Session> sessions) {
         if (sessions == null) {
             return null;
         }
-
+        
         return sessions.stream()
-                .map(this::toDto)
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
-
+    
     @Override
-    public List<Session> toEntityList(List<SessionDto> sessionDtos) {
-        if (sessionDtos == null) {
-            return null;
+    public void updateEntityFromRequest(Session session, SessionRequest request) {
+        if (session == null || request == null) {
+            return;
         }
-
-        return sessionDtos.stream()
-                .map(this::toEntity)
-                .collect(Collectors.toList());
+        
+        session.setTitle(request.getTitle());
+        session.setEndReminder(request.getEndReminder());
+        session.setNote(request.getNote());
+        
+        // 處理任務關聯更新
+        if (request.getTaskId() != null) {
+            Task task = taskRepository.findById(request.getTaskId())
+                    .orElse(null);
+            session.setTask(task);
+        } else {
+            session.setTask(null);
+        }
     }
-}
+} 

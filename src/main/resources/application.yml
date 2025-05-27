@@ -1,7 +1,7 @@
 spring:
     # Database Configuration
     datasource:
-        url: jdbc:h2:file:./sessionflow_db;MODE=MySQL
+        url: jdbc:h2:file:./sessionflow_db;MODE=MySQL;AUTO_SERVER=TRUE
         username: sa
         password: password
         driver-class-name: org.h2.Driver
@@ -9,6 +9,7 @@ spring:
     # JPA/Hibernate Configuration
     jpa:
         database-platform: org.hibernate.dialect.H2Dialect
+        open-in-view: false
         hibernate:
             ddl-auto: update
         show-sql: true
@@ -38,3 +39,15 @@ logging:
 # Application Configuration
 app:
     timezone: Asia/Taipei
+
+# SpringDoc OpenAPI Configuration
+springdoc:
+    api-docs:
+        path: /api-docs
+    swagger-ui:
+        path: /swagger-ui.html
+        enabled: true
+        try-it-out-enabled: true
+        operations-sorter: method
+        tags-sorter: alpha
+    show-actuator: false

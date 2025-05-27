@@ -1,92 +1,105 @@
 package com.sessionflow.mapper.impl;
 
-import com.sessionflow.dto.TaskDto;
+import com.sessionflow.dto.TaskRequest;
+import com.sessionflow.dto.TaskResponse;
 import com.sessionflow.mapper.TaskMapper;
+import com.sessionflow.mapper.TagMapper;
+import com.sessionflow.model.Tag;
 import com.sessionflow.model.Task;
-import com.sessionflow.repository.TaskRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sessionflow.repository.TagRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class TaskMapperImpl implements TaskMapper {
-
-    @Autowired
-    private TaskRepository taskRepository;
-
+    
+    private final TagRepository tagRepository;
+    private final TagMapper tagMapper;
+    
     @Override
-    public TaskDto toDto(Task task) {
+    public Task toEntity(TaskRequest taskRequest) {
+        if (taskRequest == null) {
+            return null;
+        }
+        
+        Task task = new Task(taskRequest.getTitle());
+        task.setDueTime(taskRequest.getDueTime());
+        task.setNote(taskRequest.getNote());
+        
+        // 處理標籤關聯
+        if (taskRequest.getTagIds() != null && !taskRequest.getTagIds().isEmpty()) {
+            Set<Tag> tags = new HashSet<>();
+            for (Long tagId : taskRequest.getTagIds()) {
+                tagRepository.findById(tagId).ifPresent(tags::add);
+            }
+            task.setTags(tags);
+        }
+        
+        return task;
+    }
+    
+    @Override
+    public TaskResponse toResponse(Task task) {
         if (task == null) {
             return null;
         }
-
-        Long parentId = null;
-        if (task.getParent() != null) {
-            parentId = task.getParent().getId();
+        
+        TaskResponse response = new TaskResponse();
+        response.setId(task.getId());
+        response.setTitle(task.getTitle());
+        response.setDueTime(task.getDueTime());
+        response.setCompletedAt(task.getCompletedAt());
+        response.setNote(task.getNote());
+        response.setStatus(task.getStatus().getValue());
+        
+        // 轉換標籤
+        if (task.getTags() != null && !task.getTags().isEmpty()) {
+            response.setTags(task.getTags().stream()
+                    .map(tagMapper::toResponse)
+                    .collect(Collectors.toList()));
         }
-
-        List<TaskDto> children = null;
-        if (task.getChildren() != null && !task.getChildren().isEmpty()) {
-            children = toDtoList(task.getChildren());
-        }
-
-        return new TaskDto(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getEstimatedDuration(),
-                task.getStatus(),
-                parentId,
-                children,
-                null, // tags would be mapped by a TagMapper
-                task.getCreatedAt(),
-                task.getUpdatedAt());
+        
+        return response;
     }
-
+    
     @Override
-    public Task toEntity(TaskDto taskDto) {
-        if (taskDto == null) {
-            return null;
-        }
-
-        Task.TaskBuilder builder = Task.builder()
-                .title(taskDto.title())
-                .description(taskDto.description())
-                .estimatedDuration(taskDto.estimatedDuration())
-                .status(taskDto.status() != null ? taskDto.status() : Task.TaskStatus.ACTIVE);
-
-        // Handle parent relation if parentId is provided
-        if (taskDto.parentId() != null) {
-            builder.parent(taskRepository.findById(taskDto.parentId()).orElse(null));
-        }
-
-        // Children and tags would be handled separately
-        // after the main entity is saved
-
-        return builder.build();
-    }
-
-    @Override
-    public List<TaskDto> toDtoList(List<Task> tasks) {
+    public List<TaskResponse> toResponseList(List<Task> tasks) {
         if (tasks == null) {
             return null;
         }
-
+        
         return tasks.stream()
-                .map(this::toDto)
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
-
+    
     @Override
-    public List<Task> toEntityList(List<TaskDto> taskDtos) {
-        if (taskDtos == null) {
-            return null;
+    public void updateEntityFromRequest(Task task, TaskRequest taskRequest) {
+        if (task == null || taskRequest == null) {
+            return;
         }
-
-        return taskDtos.stream()
-                .map(this::toEntity)
-                .collect(Collectors.toList());
+        
+        task.setTitle(taskRequest.getTitle());
+        task.setDueTime(taskRequest.getDueTime());
+        task.setNote(taskRequest.getNote());
+        
+        // 更新標籤關聯
+        if (taskRequest.getTagIds() != null) {
+            Set<Tag> tags = new HashSet<>();
+            for (Long tagId : taskRequest.getTagIds()) {
+                tagRepository.findById(tagId).ifPresent(tags::add);
+            }
+            task.setTags(tags);
+        } else {
+            task.getTags().clear();
+        }
     }
-}
+} 

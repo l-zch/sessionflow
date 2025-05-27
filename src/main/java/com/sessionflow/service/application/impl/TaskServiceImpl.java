@@ -1,0 +1,135 @@
+package com.sessionflow.service.application.impl;
+
+import com.sessionflow.dto.TaskRequest;
+import com.sessionflow.dto.TaskResponse;
+import com.sessionflow.exception.TaskNotFoundException;
+import com.sessionflow.mapper.TaskMapper;
+import com.sessionflow.model.Task;
+import com.sessionflow.model.TaskStatus;
+import com.sessionflow.repository.TaskRepository;
+import com.sessionflow.repository.SessionRepository;
+import com.sessionflow.repository.SessionRecordRepository;
+import com.sessionflow.repository.ScheduleEntryRepository;
+import com.sessionflow.service.TaskService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional
+public class TaskServiceImpl implements TaskService {
+    
+    private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
+    private final SessionRepository sessionRepository;
+    private final SessionRecordRepository sessionRecordRepository;
+    private final ScheduleEntryRepository scheduleEntryRepository;
+    
+    @Override
+    public TaskResponse createTask(TaskRequest taskRequest) {
+        log.info("Creating new task with title: {}", taskRequest.getTitle());
+        
+        Task task = taskMapper.toEntity(taskRequest);
+        Task savedTask = taskRepository.save(task);
+        
+        log.info("Task created successfully with id: {}", savedTask.getId());
+        return taskMapper.toResponse(savedTask);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<TaskResponse> getAllTasks(String status) {
+        log.info("Fetching all tasks with status filter: {}", status);
+        
+        List<Task> tasks;
+        
+        if (status == null || status.trim().isEmpty()) {
+            tasks = taskRepository.findAllOrderByCreatedAtDesc();
+        } else {
+            TaskStatus taskStatus = parseTaskStatus(status);
+            tasks = taskRepository.findByStatusOrderByCreatedAtDesc(taskStatus);
+        }
+        
+        log.info("Found {} tasks", tasks.size());
+        return taskMapper.toResponseList(tasks);
+    }
+    
+    @Override
+    public TaskResponse updateTask(Long id, TaskRequest taskRequest) {
+        log.info("Updating task with id: {}", id);
+        
+        Task existingTask = taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException(id));
+        
+        taskMapper.updateEntityFromRequest(existingTask, taskRequest);
+        Task updatedTask = taskRepository.save(existingTask);
+        
+        log.info("Task updated successfully with id: {}", updatedTask.getId());
+        return taskMapper.toResponse(updatedTask);
+    }
+    
+    @Override
+    public void deleteTask(Long id) {
+        log.info("Safely deleting task with id: {}", id);
+        
+        if (!taskRepository.existsById(id)) {
+            throw new TaskNotFoundException(id);
+        }
+        
+        try {
+            // 1. 先將所有關聯的 Session 的 task 設為 null
+            log.debug("Setting task to null in related sessions");
+            sessionRepository.setTaskToNullByTaskId(id);
+            
+            // 2. 將所有關聯的 SessionRecord 的 task 設為 null
+            log.debug("Setting task to null in related session records");
+            sessionRecordRepository.setTaskToNullByTaskId(id);
+            
+            // 3. 將所有關聯的 ScheduleEntry 的 task 設為 null
+            log.debug("Setting task to null in related schedule entries");
+            scheduleEntryRepository.setTaskToNullByTaskId(id);
+            
+            // 4. 最後刪除任務本身
+            log.debug("Deleting task");
+            taskRepository.deleteById(id);
+            
+            log.info("Task deleted successfully with id: {}", id);
+            
+        } catch (Exception e) {
+            log.error("Error occurred while deleting task with id: {}", id, e);
+            throw new RuntimeException("Failed to delete task safely", e);
+        }
+    }
+    
+    @Override
+    public TaskResponse completeTask(Long id) {
+        log.info("Completing task with id: {}", id);
+        
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException(id));
+        
+        task.complete();
+        Task completedTask = taskRepository.save(task);
+        
+        log.info("Task completed successfully with id: {}", completedTask.getId());
+        return taskMapper.toResponse(completedTask);
+    }
+    
+    private TaskStatus parseTaskStatus(String status) {
+        try {
+            return switch (status.toLowerCase()) {
+                case "pending" -> TaskStatus.PENDING;
+                case "complete" -> TaskStatus.COMPLETE;
+                default -> throw new IllegalArgumentException("Invalid task status: " + status);
+            };
+        } catch (Exception e) {
+            log.warn("Invalid task status provided: {}", status);
+            throw new IllegalArgumentException("Invalid task status: " + status + ". Valid values are: PENDING, COMPLETE");
+        }
+    }
+} 

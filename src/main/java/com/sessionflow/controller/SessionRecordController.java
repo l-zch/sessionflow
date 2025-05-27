@@ -1,5 +1,6 @@
 package com.sessionflow.controller;
 
+import com.sessionflow.config.ApiResponseTemplates;
 import com.sessionflow.dto.SessionRecordResponse;
 import com.sessionflow.dto.SessionRecordUpdateRequest;
 import com.sessionflow.exception.ErrorResponse;
@@ -41,14 +42,7 @@ public class SessionRecordController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "TYPE_MISMATCH_ERROR",
-                          "message": "參數類型錯誤",
-                          "details": "Invalid value 'invalid-date' for parameter 'startDate'. Expected type: LocalDate",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.TYPE_MISMATCH_ERROR_REF)))
     })
     public ResponseEntity<List<SessionRecordResponse>> getSessionRecords(
             @Parameter(description = "開始日期 (YYYY-MM-DD)", example = "2024-01-01")
@@ -79,25 +73,11 @@ public class SessionRecordController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "VALIDATION_ERROR",
-                          "message": "請求參數驗證失敗",
-                          "details": "{completionNote=完成備註不能為空}",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "404", description = "工作階段紀錄不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "SESSION_RECORD_NOT_FOUND",
-                          "message": "工作階段紀錄不存在",
-                          "details": "SessionRecord with id 1 not found",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.SESSION_RECORD_NOT_FOUND_REF)))
     })
     public ResponseEntity<SessionRecordResponse> updateSessionRecord(
             @Parameter(description = "工作階段紀錄ID", required = true, example = "1")
@@ -121,14 +101,7 @@ public class SessionRecordController {
         @ApiResponse(responseCode = "404", description = "工作階段紀錄不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "SESSION_RECORD_NOT_FOUND",
-                          "message": "工作階段紀錄不存在",
-                          "details": "SessionRecord with id 1 not found",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.SESSION_RECORD_NOT_FOUND_REF)))
     })
     public ResponseEntity<Void> deleteSessionRecord(
             @Parameter(description = "工作階段紀錄ID", required = true, example = "1")

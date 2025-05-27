@@ -1,5 +1,6 @@
 package com.sessionflow.controller;
 
+import com.sessionflow.config.ApiResponseTemplates;
 import com.sessionflow.dto.TaskRequest;
 import com.sessionflow.dto.TaskResponse;
 import com.sessionflow.exception.ErrorResponse;
@@ -40,25 +41,11 @@ public class TaskController {
         @ApiResponse(responseCode = "400", description = "請求參數驗證失敗",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "VALIDATION_ERROR",
-                          "message": "請求參數驗證失敗",
-                          "details": "{title=任務標題不能為空}",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "500", description = "伺服器內部錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "INTERNAL_SERVER_ERROR",
-                          "message": "伺服器內部錯誤",
-                          "details": "An unexpected error occurred",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.INTERNAL_SERVER_ERROR_REF)))
     })
     public ResponseEntity<TaskResponse> createTask(
             @Parameter(description = "任務建立請求", required = true)
@@ -78,25 +65,11 @@ public class TaskController {
         @ApiResponse(responseCode = "400", description = "無效的狀態參數",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "INVALID_ARGUMENT",
-                          "message": "參數錯誤",
-                          "details": "Invalid status value: INVALID_STATUS",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.INVALID_ARGUMENT_REF))),
         @ApiResponse(responseCode = "500", description = "伺服器內部錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "INTERNAL_SERVER_ERROR",
-                          "message": "伺服器內部錯誤",
-                          "details": "An unexpected error occurred",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.INTERNAL_SERVER_ERROR_REF)))
     })
     public ResponseEntity<List<TaskResponse>> getAllTasks(
             @Parameter(description = "任務狀態篩選 (PENDING/COMPLETE)", example = "PENDING")
@@ -116,36 +89,15 @@ public class TaskController {
         @ApiResponse(responseCode = "400", description = "請求參數驗證失敗",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "VALIDATION_ERROR",
-                          "message": "請求參數驗證失敗",
-                          "details": "{title=任務標題不能為空}",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "404", description = "任務不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "TASK_NOT_FOUND",
-                          "message": "任務不存在",
-                          "details": "Task with id 1 not found",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.TASK_NOT_FOUND_REF))),
         @ApiResponse(responseCode = "500", description = "伺服器內部錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "INTERNAL_SERVER_ERROR",
-                          "message": "伺服器內部錯誤",
-                          "details": "An unexpected error occurred",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.INTERNAL_SERVER_ERROR_REF)))
     })
     public ResponseEntity<TaskResponse> updateTask(
             @Parameter(description = "任務 ID", required = true, example = "1")
@@ -167,25 +119,11 @@ public class TaskController {
         @ApiResponse(responseCode = "404", description = "任務不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "TASK_NOT_FOUND",
-                          "message": "任務不存在",
-                          "details": "Task with id 1 not found",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.TASK_NOT_FOUND_REF))),
         @ApiResponse(responseCode = "500", description = "伺服器內部錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "INTERNAL_SERVER_ERROR",
-                          "message": "伺服器內部錯誤",
-                          "details": "An unexpected error occurred",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.INTERNAL_SERVER_ERROR_REF)))
     })
     public ResponseEntity<TaskResponse> completeTask(
             @Parameter(description = "任務 ID", required = true, example = "1")
@@ -203,25 +141,11 @@ public class TaskController {
         @ApiResponse(responseCode = "404", description = "任務不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "TASK_NOT_FOUND",
-                          "message": "任務不存在",
-                          "details": "Task with id 1 not found",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.TASK_NOT_FOUND_REF))),
         @ApiResponse(responseCode = "500", description = "伺服器內部錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "INTERNAL_SERVER_ERROR",
-                          "message": "伺服器內部錯誤",
-                          "details": "An unexpected error occurred",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.INTERNAL_SERVER_ERROR_REF)))
     })
     public ResponseEntity<Void> deleteTask(
             @Parameter(description = "任務 ID", required = true, example = "1")

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,13 +23,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleTagNameAlreadyExists(TagNameAlreadyExistsException ex) {
         log.warn("Tag name conflict: {}", ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "TAG_NAME_CONFLICT",
-            "標籤名稱重複",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.TAG_NAME_CONFLICT.createResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
     
@@ -38,13 +31,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleTagNotFound(TagNotFoundException ex) {
         log.warn("Tag not found: {}", ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "TAG_NOT_FOUND",
-            "標籤不存在",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.TAG_NOT_FOUND.createResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
     
@@ -52,13 +39,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleTaskNotFound(TaskNotFoundException ex) {
         log.warn("Task not found: {}", ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "TASK_NOT_FOUND",
-            "任務不存在",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.TASK_NOT_FOUND.createResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
     
@@ -66,13 +47,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleSessionNotFound(SessionNotFoundException ex) {
         log.warn("Session not found: {}", ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "SESSION_NOT_FOUND",
-            "工作階段不存在",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.SESSION_NOT_FOUND.createResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
     
@@ -80,13 +55,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleSessionRecordNotFound(SessionRecordNotFoundException ex) {
         log.warn("SessionRecord not found: {}", ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "SESSION_RECORD_NOT_FOUND",
-            "工作階段紀錄不存在",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.SESSION_RECORD_NOT_FOUND.createResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
     
@@ -94,13 +63,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleScheduleEntryNotFound(ScheduleEntryNotFoundException ex) {
         log.warn("ScheduleEntry not found: {}", ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "SCHEDULE_ENTRY_NOT_FOUND",
-            "排程不存在",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.SCHEDULE_ENTRY_NOT_FOUND.createResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
     
@@ -108,13 +71,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidTimeRange(InvalidTimeRangeException ex) {
         log.warn("Invalid time range: {}", ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "INVALID_TIME_RANGE",
-            "時間區間錯誤",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.INVALID_TIME_RANGE.createResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse);
     }
     
@@ -122,13 +79,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
         log.warn("Invalid argument: {}", ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "INVALID_ARGUMENT",
-            "參數錯誤",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.INVALID_ARGUMENT.createResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
     
@@ -136,13 +87,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
         log.warn("Unsupported media type: {}", ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "UNSUPPORTED_MEDIA_TYPE",
-            "不支援的媒體類型",
-            ex.getMessage(),
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.UNSUPPORTED_MEDIA_TYPE.createResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(errorResponse);
     }
     
@@ -157,13 +102,7 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "VALIDATION_ERROR",
-            "請求參數驗證失敗",
-            errors.toString(),
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.VALIDATION_ERROR.createResponse(errors.toString());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
     
@@ -171,13 +110,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         log.warn("JSON parsing error: {}", ex.getMessage());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "JSON_PARSE_ERROR",
-            "JSON 格式錯誤",
-            "Invalid JSON format in request body",
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.JSON_PARSE_ERROR.createResponse("Invalid JSON format in request body");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
     
@@ -188,13 +121,7 @@ public class GlobalExceptionHandler {
         String message = String.format("Invalid value '%s' for parameter '%s'. Expected type: %s", 
             ex.getValue(), ex.getName(), ex.getRequiredType().getSimpleName());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "TYPE_MISMATCH_ERROR",
-            "參數類型錯誤",
-            message,
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.TYPE_MISMATCH_ERROR.createResponse(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
     
@@ -204,13 +131,7 @@ public class GlobalExceptionHandler {
         
         String message = String.format("Required parameter '%s' is missing", ex.getParameterName());
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "MISSING_PARAMETER",
-            "缺少必要參數",
-            message,
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.MISSING_PARAMETER.createResponse(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
     
@@ -218,13 +139,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         log.error("Unexpected error occurred", ex);
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            "INTERNAL_SERVER_ERROR",
-            "伺服器內部錯誤",
-            "An unexpected error occurred",
-            LocalDateTime.now()
-        );
-        
+        ErrorResponse errorResponse = ErrorDefinition.INTERNAL_SERVER_ERROR.createResponse("An unexpected error occurred");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 } 

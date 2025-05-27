@@ -1,5 +1,6 @@
 package com.sessionflow.controller;
 
+import com.sessionflow.config.ApiResponseTemplates;
 import com.sessionflow.dto.ScheduleEntryRequest;
 import com.sessionflow.dto.ScheduleEntryResponse;
 import com.sessionflow.exception.ErrorResponse;
@@ -42,25 +43,11 @@ public class ScheduleEntryController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "VALIDATION_ERROR",
-                          "message": "請求參數驗證失敗",
-                          "details": "{title=排程標題不能為空}",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "422", description = "時間區間錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "INVALID_TIME_RANGE",
-                          "message": "時間區間錯誤",
-                          "details": "結束時間必須晚於開始時間",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.INVALID_TIME_RANGE_REF)))
     })
     public ResponseEntity<ScheduleEntryResponse> createScheduleEntry(
             @Parameter(description = "排程建立請求", required = true)
@@ -80,36 +67,15 @@ public class ScheduleEntryController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "VALIDATION_ERROR",
-                          "message": "請求參數驗證失敗",
-                          "details": "{title=排程標題不能為空}",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "404", description = "排程不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "SCHEDULE_ENTRY_NOT_FOUND",
-                          "message": "排程不存在",
-                          "details": "ScheduleEntry with id 1 not found",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.SCHEDULE_ENTRY_NOT_FOUND_REF))),
         @ApiResponse(responseCode = "422", description = "時間區間錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "INVALID_TIME_RANGE",
-                          "message": "時間區間錯誤",
-                          "details": "結束時間必須晚於開始時間",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.INVALID_TIME_RANGE_REF)))
     })
     public ResponseEntity<ScheduleEntryResponse> updateScheduleEntry(
             @Parameter(description = "排程 ID", required = true, example = "1") @PathVariable Long id,
@@ -128,14 +94,7 @@ public class ScheduleEntryController {
         @ApiResponse(responseCode = "404", description = "排程不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "SCHEDULE_ENTRY_NOT_FOUND",
-                          "message": "排程不存在",
-                          "details": "ScheduleEntry with id 1 not found",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.SCHEDULE_ENTRY_NOT_FOUND_REF)))
     })
     public ResponseEntity<Void> deleteScheduleEntry(
             @Parameter(description = "排程 ID", required = true, example = "1") @PathVariable Long id) {
@@ -154,14 +113,7 @@ public class ScheduleEntryController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "TYPE_MISMATCH_ERROR",
-                          "message": "參數類型錯誤",
-                          "details": "Invalid value 'invalid-date' for parameter 'startDate'. Expected type: LocalDate",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.TYPE_MISMATCH_ERROR_REF)))
     })
     public ResponseEntity<List<ScheduleEntryResponse>> getScheduleEntries(
             @Parameter(description = "開始日期", required = true, example = "2024-01-15")

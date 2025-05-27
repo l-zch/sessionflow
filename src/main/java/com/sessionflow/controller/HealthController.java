@@ -1,5 +1,6 @@
 package com.sessionflow.controller;
 
+import com.sessionflow.config.ApiResponseTemplates;
 import com.sessionflow.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -37,14 +38,7 @@ public class HealthController {
             @ApiResponse(responseCode = "500", description = "系統內部錯誤",
                     content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class),
-                    examples = @ExampleObject(value = """
-                            {
-                              "code": "INTERNAL_SERVER_ERROR",
-                              "message": "伺服器內部錯誤",
-                              "details": "An unexpected error occurred",
-                              "timestamp": "2024-01-15T10:30:00"
-                            }
-                            """)))
+                    examples = @ExampleObject(ref = ApiResponseTemplates.INTERNAL_SERVER_ERROR_REF)))
     })
     public ResponseEntity<Map<String, Object>> health() {
         return ResponseEntity.ok(Map.of(

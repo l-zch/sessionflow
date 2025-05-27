@@ -1,5 +1,6 @@
 package com.sessionflow.controller;
 
+import com.sessionflow.config.ApiResponseTemplates;
 import com.sessionflow.dto.SessionRecordCreateRequest;
 import com.sessionflow.dto.SessionRecordResponse;
 import com.sessionflow.dto.SessionRequest;
@@ -42,14 +43,7 @@ public class SessionController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "VALIDATION_ERROR",
-                          "message": "請求參數驗證失敗",
-                          "details": "{title=工作階段標題不能為空}",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF)))
     })
     public ResponseEntity<SessionResponse> createSession(
             @Parameter(description = "工作階段建立請求", required = true)
@@ -77,7 +71,7 @@ public class SessionController {
     }
     
     @PostMapping("/{id}/end")
-    @Operation(summary = "結束工作階段", description = "結束工作階段並建立 SessionRecord")
+    @Operation(summary = "結束工作階段", description = "結束指定的工作階段並建立 SessionRecord")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "工作階段結束成功，SessionRecord 已建立",
                 content = @Content(mediaType = "application/json", 
@@ -85,25 +79,11 @@ public class SessionController {
         @ApiResponse(responseCode = "404", description = "工作階段不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "SESSION_NOT_FOUND",
-                          "message": "工作階段不存在",
-                          "details": "Session with id 1 not found",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.SESSION_NOT_FOUND_REF))),
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "VALIDATION_ERROR",
-                          "message": "請求參數驗證失敗",
-                          "details": "{sessionId=Session ID cannot be null}",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF)))
     })
     public ResponseEntity<SessionRecordResponse> endSession(
             @Parameter(description = "工作階段 ID", required = true, example = "1") @PathVariable Long id,

@@ -1,5 +1,6 @@
 package com.sessionflow.controller;
 
+import com.sessionflow.config.ApiResponseTemplates;
 import com.sessionflow.dto.TagRequest;
 import com.sessionflow.dto.TagResponse;
 import com.sessionflow.exception.ErrorResponse;
@@ -40,25 +41,11 @@ public class TagController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "VALIDATION_ERROR",
-                          "message": "請求參數驗證失敗",
-                          "details": "{name=標籤名稱不能為空}",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "409", description = "標籤名稱重複",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "TAG_NAME_CONFLICT",
-                          "message": "標籤名稱重複",
-                          "details": "Tag name 'work' already exists",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.TAG_NAME_CONFLICT_REF)))
     })
     public ResponseEntity<TagResponse> createTag(
             @Parameter(description = "標籤建立請求", required = true)
@@ -91,36 +78,15 @@ public class TagController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "VALIDATION_ERROR",
-                          "message": "請求參數驗證失敗",
-                          "details": "{name=標籤名稱不能為空}",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "404", description = "標籤不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "TAG_NOT_FOUND",
-                          "message": "標籤不存在",
-                          "details": "Tag with id 1 not found",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """))),
+                examples = @ExampleObject(ref = ApiResponseTemplates.TAG_NOT_FOUND_REF))),
         @ApiResponse(responseCode = "409", description = "標籤名稱重複",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "TAG_NAME_CONFLICT",
-                          "message": "標籤名稱重複",
-                          "details": "Tag name 'work' already exists",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.TAG_NAME_CONFLICT_REF)))
     })
     public ResponseEntity<TagResponse> updateTag(
             @Parameter(description = "標籤 ID", required = true, example = "1")
@@ -140,14 +106,7 @@ public class TagController {
         @ApiResponse(responseCode = "404", description = "標籤不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(value = """
-                        {
-                          "code": "TAG_NOT_FOUND",
-                          "message": "標籤不存在",
-                          "details": "Tag with id 1 not found",
-                          "timestamp": "2024-01-15T10:30:00"
-                        }
-                        """)))
+                examples = @ExampleObject(ref = ApiResponseTemplates.TAG_NOT_FOUND_REF)))
     })
     public ResponseEntity<Void> deleteTag(
             @Parameter(description = "標籤 ID", required = true, example = "1")

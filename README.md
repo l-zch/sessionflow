@@ -19,7 +19,7 @@ SessionFlow 讓使用者能夠：
 
 ## 技術棧
 
--   **後端框架**: Spring Boot 3.4.1
+-   **後端框架**: Spring Boot 3.4.6
 -   **持久層**: Spring Data JPA, Hibernate
 -   **資料庫**: H2 檔案式資料庫
 -   **構建工具**: Maven

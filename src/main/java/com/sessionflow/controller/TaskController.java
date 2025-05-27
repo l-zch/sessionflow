@@ -2,10 +2,13 @@ package com.sessionflow.controller;
 
 import com.sessionflow.dto.TaskRequest;
 import com.sessionflow.dto.TaskResponse;
+import com.sessionflow.exception.ErrorResponse;
 import com.sessionflow.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -34,10 +37,31 @@ public class TaskController {
         @ApiResponse(responseCode = "201", description = "任務建立成功",
                 content = @Content(mediaType = "application/json", 
                 schema = @Schema(implementation = TaskResponse.class))),
-        @ApiResponse(responseCode = "400", description = "請求參數驗證失敗"),
-        @ApiResponse(responseCode = "500", description = "伺服器內部錯誤")
+        @ApiResponse(responseCode = "400", description = "請求參數驗證失敗",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "VALIDATION_ERROR",
+                          "message": "請求參數驗證失敗",
+                          "details": "{title=任務標題不能為空}",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """))),
+        @ApiResponse(responseCode = "500", description = "伺服器內部錯誤",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "INTERNAL_SERVER_ERROR",
+                          "message": "伺服器內部錯誤",
+                          "details": "An unexpected error occurred",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """)))
     })
     public ResponseEntity<TaskResponse> createTask(
+            @Parameter(description = "任務建立請求", required = true)
             @Valid @RequestBody TaskRequest taskRequest) {
         log.info("Received request to create task: {}", taskRequest.getTitle());
         
@@ -50,9 +74,29 @@ public class TaskController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "查詢成功",
                 content = @Content(mediaType = "application/json", 
-                schema = @Schema(implementation = TaskResponse.class))),
-        @ApiResponse(responseCode = "400", description = "無效的狀態參數"),
-        @ApiResponse(responseCode = "500", description = "伺服器內部錯誤")
+                array = @ArraySchema(schema = @Schema(implementation = TaskResponse.class)))),
+        @ApiResponse(responseCode = "400", description = "無效的狀態參數",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "INVALID_ARGUMENT",
+                          "message": "參數錯誤",
+                          "details": "Invalid status value: INVALID_STATUS",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """))),
+        @ApiResponse(responseCode = "500", description = "伺服器內部錯誤",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "INTERNAL_SERVER_ERROR",
+                          "message": "伺服器內部錯誤",
+                          "details": "An unexpected error occurred",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """)))
     })
     public ResponseEntity<List<TaskResponse>> getAllTasks(
             @Parameter(description = "任務狀態篩選 (PENDING/COMPLETE)", example = "PENDING")
@@ -69,13 +113,44 @@ public class TaskController {
         @ApiResponse(responseCode = "200", description = "任務更新成功",
                 content = @Content(mediaType = "application/json", 
                 schema = @Schema(implementation = TaskResponse.class))),
-        @ApiResponse(responseCode = "400", description = "請求參數驗證失敗"),
-        @ApiResponse(responseCode = "404", description = "任務不存在"),
-        @ApiResponse(responseCode = "500", description = "伺服器內部錯誤")
+        @ApiResponse(responseCode = "400", description = "請求參數驗證失敗",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "VALIDATION_ERROR",
+                          "message": "請求參數驗證失敗",
+                          "details": "{title=任務標題不能為空}",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """))),
+        @ApiResponse(responseCode = "404", description = "任務不存在",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "TASK_NOT_FOUND",
+                          "message": "任務不存在",
+                          "details": "Task with id 1 not found",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """))),
+        @ApiResponse(responseCode = "500", description = "伺服器內部錯誤",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "INTERNAL_SERVER_ERROR",
+                          "message": "伺服器內部錯誤",
+                          "details": "An unexpected error occurred",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """)))
     })
     public ResponseEntity<TaskResponse> updateTask(
-            @Parameter(description = "任務 ID", example = "1")
+            @Parameter(description = "任務 ID", required = true, example = "1")
             @PathVariable Long id,
+            @Parameter(description = "任務更新請求", required = true)
             @Valid @RequestBody TaskRequest taskRequest) {
         log.info("Received request to update task with id: {}", id);
         
@@ -89,11 +164,31 @@ public class TaskController {
         @ApiResponse(responseCode = "200", description = "任務標記完成成功",
                 content = @Content(mediaType = "application/json", 
                 schema = @Schema(implementation = TaskResponse.class))),
-        @ApiResponse(responseCode = "404", description = "任務不存在"),
-        @ApiResponse(responseCode = "500", description = "伺服器內部錯誤")
+        @ApiResponse(responseCode = "404", description = "任務不存在",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "TASK_NOT_FOUND",
+                          "message": "任務不存在",
+                          "details": "Task with id 1 not found",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """))),
+        @ApiResponse(responseCode = "500", description = "伺服器內部錯誤",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "INTERNAL_SERVER_ERROR",
+                          "message": "伺服器內部錯誤",
+                          "details": "An unexpected error occurred",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """)))
     })
     public ResponseEntity<TaskResponse> completeTask(
-            @Parameter(description = "任務 ID", example = "1")
+            @Parameter(description = "任務 ID", required = true, example = "1")
             @PathVariable Long id) {
         log.info("Received request to complete task with id: {}", id);
         
@@ -105,11 +200,31 @@ public class TaskController {
     @Operation(summary = "刪除任務", description = "根據 ID 刪除任務")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "任務刪除成功"),
-        @ApiResponse(responseCode = "404", description = "任務不存在"),
-        @ApiResponse(responseCode = "500", description = "伺服器內部錯誤")
+        @ApiResponse(responseCode = "404", description = "任務不存在",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "TASK_NOT_FOUND",
+                          "message": "任務不存在",
+                          "details": "Task with id 1 not found",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """))),
+        @ApiResponse(responseCode = "500", description = "伺服器內部錯誤",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "INTERNAL_SERVER_ERROR",
+                          "message": "伺服器內部錯誤",
+                          "details": "An unexpected error occurred",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """)))
     })
     public ResponseEntity<Void> deleteTask(
-            @Parameter(description = "任務 ID", example = "1")
+            @Parameter(description = "任務 ID", required = true, example = "1")
             @PathVariable Long id) {
         log.info("Received request to delete task with id: {}", id);
         

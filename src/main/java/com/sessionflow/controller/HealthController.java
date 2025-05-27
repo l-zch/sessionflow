@@ -1,6 +1,10 @@
 package com.sessionflow.controller;
 
+import com.sessionflow.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,7 +24,27 @@ public class HealthController {
     @GetMapping("/health")
     @Operation(summary = "健康檢查", description = "檢查系統是否正常運作")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "系統正常運作")
+            @ApiResponse(responseCode = "200", description = "系統正常運作",
+                    content = @Content(mediaType = "application/json",
+                    schema = @Schema(type = "object"),
+                    examples = @ExampleObject(value = """
+                            {
+                              "status": "UP",
+                              "timestamp": "2024-01-15T10:30:00",
+                              "service": "Task Management System"
+                            }
+                            """))),
+            @ApiResponse(responseCode = "500", description = "系統內部錯誤",
+                    content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = """
+                            {
+                              "code": "INTERNAL_SERVER_ERROR",
+                              "message": "伺服器內部錯誤",
+                              "details": "An unexpected error occurred",
+                              "timestamp": "2024-01-15T10:30:00"
+                            }
+                            """)))
     })
     public ResponseEntity<Map<String, Object>> health() {
         return ResponseEntity.ok(Map.of(

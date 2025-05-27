@@ -2,9 +2,14 @@ package com.sessionflow.controller;
 
 import com.sessionflow.dto.SessionRecordResponse;
 import com.sessionflow.dto.SessionRecordUpdateRequest;
+import com.sessionflow.exception.ErrorResponse;
 import com.sessionflow.service.SessionRecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,8 +35,20 @@ public class SessionRecordController {
     @GetMapping
     @Operation(summary = "查詢工作階段紀錄", description = "根據時間區間與任務ID查詢工作階段紀錄，所有參數皆為可選")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "查詢成功"),
-        @ApiResponse(responseCode = "400", description = "請求參數錯誤")
+        @ApiResponse(responseCode = "200", description = "查詢成功",
+                content = @Content(mediaType = "application/json", 
+                array = @ArraySchema(schema = @Schema(implementation = SessionRecordResponse.class)))),
+        @ApiResponse(responseCode = "400", description = "請求參數錯誤",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "TYPE_MISMATCH_ERROR",
+                          "message": "參數類型錯誤",
+                          "details": "Invalid value 'invalid-date' for parameter 'startDate'. Expected type: LocalDate",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """)))
     })
     public ResponseEntity<List<SessionRecordResponse>> getSessionRecords(
             @Parameter(description = "開始日期 (YYYY-MM-DD)", example = "2024-01-01")
@@ -56,15 +73,37 @@ public class SessionRecordController {
     @PutMapping("/{id}")
     @Operation(summary = "更新工作階段紀錄", description = "更新指定ID的工作階段紀錄")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "更新成功"),
-        @ApiResponse(responseCode = "400", description = "請求參數錯誤"),
-        @ApiResponse(responseCode = "404", description = "工作階段紀錄不存在")
+        @ApiResponse(responseCode = "200", description = "更新成功",
+                content = @Content(mediaType = "application/json", 
+                schema = @Schema(implementation = SessionRecordResponse.class))),
+        @ApiResponse(responseCode = "400", description = "請求參數錯誤",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "VALIDATION_ERROR",
+                          "message": "請求參數驗證失敗",
+                          "details": "{completionNote=完成備註不能為空}",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """))),
+        @ApiResponse(responseCode = "404", description = "工作階段紀錄不存在",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "SESSION_RECORD_NOT_FOUND",
+                          "message": "工作階段紀錄不存在",
+                          "details": "SessionRecord with id 1 not found",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """)))
     })
     public ResponseEntity<SessionRecordResponse> updateSessionRecord(
-            @Parameter(description = "工作階段紀錄ID", example = "1")
+            @Parameter(description = "工作階段紀錄ID", required = true, example = "1")
             @PathVariable Long id,
             
-            @Parameter(description = "更新請求")
+            @Parameter(description = "工作階段紀錄更新請求", required = true)
             @Valid @RequestBody SessionRecordUpdateRequest updateRequest) {
         
         log.info("更新工作階段紀錄請求 - ID: {}", id);
@@ -79,10 +118,20 @@ public class SessionRecordController {
     @Operation(summary = "刪除工作階段紀錄", description = "刪除指定ID的工作階段紀錄")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "刪除成功"),
-        @ApiResponse(responseCode = "404", description = "工作階段紀錄不存在")
+        @ApiResponse(responseCode = "404", description = "工作階段紀錄不存在",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(value = """
+                        {
+                          "code": "SESSION_RECORD_NOT_FOUND",
+                          "message": "工作階段紀錄不存在",
+                          "details": "SessionRecord with id 1 not found",
+                          "timestamp": "2024-01-15T10:30:00"
+                        }
+                        """)))
     })
     public ResponseEntity<Void> deleteSessionRecord(
-            @Parameter(description = "工作階段紀錄ID", example = "1")
+            @Parameter(description = "工作階段紀錄ID", required = true, example = "1")
             @PathVariable Long id) {
         
         log.info("刪除工作階段紀錄請求 - ID: {}", id);

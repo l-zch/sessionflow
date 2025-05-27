@@ -431,4 +431,61 @@ class SessionRecordRepositoryIntegrationTest {
         assertThat(foundRecord.getTitle()).isEqualTo("關聯任務的紀錄");
         assertThat(foundRecord.getTask()).isNull();
     }
+
+    @Test
+    @DisplayName("根據 taskId 刪除所有關聯的 SessionRecord")
+    void shouldDeleteSessionRecordsByTaskId() {
+        // Given
+        Task anotherTask = new Task("另一個任務");
+        anotherTask = taskRepository.save(anotherTask);
+        
+        SessionRecord record1 = new SessionRecord("關聯 testTask 的紀錄1", baseTime, baseTime.plusHours(1));
+        record1.setTask(testTask);
+        
+        SessionRecord record2 = new SessionRecord("關聯 testTask 的紀錄2", baseTime.plusHours(2), baseTime.plusHours(3));
+        record2.setTask(testTask);
+        
+        SessionRecord record3 = new SessionRecord("關聯 anotherTask 的紀錄", baseTime.plusHours(4), baseTime.plusHours(5));
+        record3.setTask(anotherTask);
+        
+        SessionRecord record4 = new SessionRecord("無關聯的紀錄", baseTime.plusHours(6), baseTime.plusHours(7));
+        // 不設定 task
+        
+        sessionRecordRepository.saveAll(List.of(record1, record2, record3, record4));
+        entityManager.flush();
+
+        // When
+        sessionRecordRepository.deleteByTaskId(testTask.getId());
+        entityManager.flush();
+
+        // Then
+        List<SessionRecord> remainingRecords = sessionRecordRepository.findAll();
+        assertThat(remainingRecords).hasSize(2);
+        assertThat(remainingRecords).extracting(SessionRecord::getTitle)
+                .containsExactlyInAnyOrder("關聯 anotherTask 的紀錄", "無關聯的紀錄");
+    }
+
+    @Test
+    @DisplayName("根據不存在的 taskId 刪除 SessionRecord - 應無影響")
+    void shouldNotDeleteSessionRecordsWhenTaskIdNotExists() {
+        // Given
+        SessionRecord record1 = new SessionRecord("紀錄1", baseTime, baseTime.plusHours(1));
+        record1.setTask(testTask);
+        
+        SessionRecord record2 = new SessionRecord("紀錄2", baseTime.plusHours(2), baseTime.plusHours(3));
+        // 不設定 task
+        
+        sessionRecordRepository.saveAll(List.of(record1, record2));
+        entityManager.flush();
+
+        // When
+        sessionRecordRepository.deleteByTaskId(999L); // 不存在的 taskId
+        entityManager.flush();
+
+        // Then
+        List<SessionRecord> allRecords = sessionRecordRepository.findAll();
+        assertThat(allRecords).hasSize(2);
+        assertThat(allRecords).extracting(SessionRecord::getTitle)
+                .containsExactlyInAnyOrder("紀錄1", "紀錄2");
+    }
 } 

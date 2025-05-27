@@ -129,6 +129,66 @@ class ScheduleEntryServiceImplTest {
     }
 
     @Test
+    @DisplayName("建立排程成功 - startAt 為 null")
+    void createScheduleEntry_NullStartAt_ShouldNotThrowException() {
+        // Given
+        validRequest.setStartAt(null);
+        validRequest.setEndAt(LocalDateTime.of(2024, 1, 15, 11, 0));
+
+        when(scheduleEntryMapper.toEntity(validRequest)).thenReturn(scheduleEntry);
+        when(scheduleEntryRepository.save(scheduleEntry)).thenReturn(scheduleEntry);
+        when(scheduleEntryMapper.toResponse(scheduleEntry)).thenReturn(scheduleEntryResponse);
+
+        // When & Then - 應該不會拋出異常
+        assertThatCode(() -> scheduleEntryService.createScheduleEntry(validRequest))
+                .doesNotThrowAnyException();
+
+        verify(scheduleEntryMapper).toEntity(validRequest);
+        verify(scheduleEntryRepository).save(scheduleEntry);
+        verify(scheduleEntryMapper).toResponse(scheduleEntry);
+    }
+
+    @Test
+    @DisplayName("建立排程成功 - endAt 為 null")
+    void createScheduleEntry_NullEndAt_ShouldNotThrowException() {
+        // Given
+        validRequest.setStartAt(LocalDateTime.of(2024, 1, 15, 10, 0));
+        validRequest.setEndAt(null);
+
+        when(scheduleEntryMapper.toEntity(validRequest)).thenReturn(scheduleEntry);
+        when(scheduleEntryRepository.save(scheduleEntry)).thenReturn(scheduleEntry);
+        when(scheduleEntryMapper.toResponse(scheduleEntry)).thenReturn(scheduleEntryResponse);
+
+        // When & Then - 應該不會拋出異常
+        assertThatCode(() -> scheduleEntryService.createScheduleEntry(validRequest))
+                .doesNotThrowAnyException();
+
+        verify(scheduleEntryMapper).toEntity(validRequest);
+        verify(scheduleEntryRepository).save(scheduleEntry);
+        verify(scheduleEntryMapper).toResponse(scheduleEntry);
+    }
+
+    @Test
+    @DisplayName("建立排程成功 - startAt 和 endAt 都為 null")
+    void createScheduleEntry_BothTimesNull_ShouldNotThrowException() {
+        // Given
+        validRequest.setStartAt(null);
+        validRequest.setEndAt(null);
+
+        when(scheduleEntryMapper.toEntity(validRequest)).thenReturn(scheduleEntry);
+        when(scheduleEntryRepository.save(scheduleEntry)).thenReturn(scheduleEntry);
+        when(scheduleEntryMapper.toResponse(scheduleEntry)).thenReturn(scheduleEntryResponse);
+
+        // When & Then - 應該不會拋出異常
+        assertThatCode(() -> scheduleEntryService.createScheduleEntry(validRequest))
+                .doesNotThrowAnyException();
+
+        verify(scheduleEntryMapper).toEntity(validRequest);
+        verify(scheduleEntryRepository).save(scheduleEntry);
+        verify(scheduleEntryMapper).toResponse(scheduleEntry);
+    }
+
+    @Test
     @DisplayName("建立排程失敗 - 結束時間早於開始時間")
     void createScheduleEntry_EndTimeBeforeStartTime_ShouldThrowException() {
         // Given
@@ -199,6 +259,50 @@ class ScheduleEntryServiceImplTest {
     }
 
     @Test
+    @DisplayName("更新排程成功 - startAt 為 null")
+    void updateScheduleEntry_NullStartAt_ShouldNotThrowException() {
+        // Given
+        Long scheduleId = 1L;
+        validRequest.setStartAt(null);
+        validRequest.setEndAt(LocalDateTime.of(2024, 1, 15, 11, 0));
+
+        when(scheduleEntryRepository.findById(scheduleId)).thenReturn(Optional.of(scheduleEntry));
+        when(scheduleEntryRepository.save(scheduleEntry)).thenReturn(scheduleEntry);
+        when(scheduleEntryMapper.toResponse(scheduleEntry)).thenReturn(scheduleEntryResponse);
+
+        // When & Then - 應該不會拋出異常
+        assertThatCode(() -> scheduleEntryService.updateScheduleEntry(scheduleId, validRequest))
+                .doesNotThrowAnyException();
+
+        verify(scheduleEntryRepository).findById(scheduleId);
+        verify(scheduleEntryMapper).updateEntityFromRequest(validRequest, scheduleEntry);
+        verify(scheduleEntryRepository).save(scheduleEntry);
+        verify(scheduleEntryMapper).toResponse(scheduleEntry);
+    }
+
+    @Test
+    @DisplayName("更新排程成功 - endAt 為 null")
+    void updateScheduleEntry_NullEndAt_ShouldNotThrowException() {
+        // Given
+        Long scheduleId = 1L;
+        validRequest.setStartAt(LocalDateTime.of(2024, 1, 15, 10, 0));
+        validRequest.setEndAt(null);
+
+        when(scheduleEntryRepository.findById(scheduleId)).thenReturn(Optional.of(scheduleEntry));
+        when(scheduleEntryRepository.save(scheduleEntry)).thenReturn(scheduleEntry);
+        when(scheduleEntryMapper.toResponse(scheduleEntry)).thenReturn(scheduleEntryResponse);
+
+        // When & Then - 應該不會拋出異常
+        assertThatCode(() -> scheduleEntryService.updateScheduleEntry(scheduleId, validRequest))
+                .doesNotThrowAnyException();
+
+        verify(scheduleEntryRepository).findById(scheduleId);
+        verify(scheduleEntryMapper).updateEntityFromRequest(validRequest, scheduleEntry);
+        verify(scheduleEntryRepository).save(scheduleEntry);
+        verify(scheduleEntryMapper).toResponse(scheduleEntry);
+    }
+
+    @Test
     @DisplayName("更新排程失敗 - 排程不存在")
     void updateScheduleEntry_NotFound_ShouldThrowException() {
         // Given
@@ -221,6 +325,26 @@ class ScheduleEntryServiceImplTest {
         // Given
         Long scheduleId = 1L;
         validRequest.setEndAt(LocalDateTime.of(2024, 1, 15, 9, 0)); // 早於開始時間
+
+        // When & Then
+        assertThatThrownBy(() -> scheduleEntryService.updateScheduleEntry(scheduleId, validRequest))
+                .isInstanceOf(InvalidTimeRangeException.class)
+                .hasMessage("結束時間必須晚於開始時間");
+
+        // 時間驗證在 repository 調用之前就會失敗，所以不會調用 repository
+        verify(scheduleEntryRepository, never()).findById(any());
+        verify(scheduleEntryMapper, never()).updateEntityFromRequest(any(), any());
+        verify(scheduleEntryRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("更新排程失敗 - 結束時間等於開始時間")
+    void updateScheduleEntry_EndTimeEqualsStartTime_ShouldThrowException() {
+        // Given
+        Long scheduleId = 1L;
+        LocalDateTime sameTime = LocalDateTime.of(2024, 1, 15, 10, 0);
+        validRequest.setStartAt(sameTime);
+        validRequest.setEndAt(sameTime);
 
         // When & Then
         assertThatThrownBy(() -> scheduleEntryService.updateScheduleEntry(scheduleId, validRequest))
@@ -354,4 +478,4 @@ class ScheduleEntryServiceImplTest {
         // Then
         verify(scheduleEntryRepository).findByDateRange(startDateTime, endDateTime);
     }
-} 
+}

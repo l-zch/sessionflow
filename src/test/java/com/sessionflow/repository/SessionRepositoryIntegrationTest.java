@@ -295,4 +295,61 @@ class SessionRepositoryIntegrationTest {
         assertThat(remainingSessions).hasSize(1);
         assertThat(remainingSessions.get(0).getTitle()).isEqualTo("保留的工作階段");
     }
+
+    @Test
+    @DisplayName("根據 taskId 刪除所有關聯的 Session")
+    void shouldDeleteSessionsByTaskId() {
+        // Given
+        Task anotherTask = new Task("另一個任務");
+        anotherTask = taskRepository.save(anotherTask);
+        
+        Session session1 = new Session("關聯 testTask 的工作階段1");
+        session1.setTask(testTask);
+        
+        Session session2 = new Session("關聯 testTask 的工作階段2");
+        session2.setTask(testTask);
+        
+        Session session3 = new Session("關聯 anotherTask 的工作階段");
+        session3.setTask(anotherTask);
+        
+        Session session4 = new Session("無關聯的工作階段");
+        // 不設定 task
+        
+        sessionRepository.saveAll(List.of(session1, session2, session3, session4));
+        entityManager.flush();
+
+        // When
+        sessionRepository.deleteByTaskId(testTask.getId());
+        entityManager.flush();
+
+        // Then
+        List<Session> remainingSessions = sessionRepository.findAll();
+        assertThat(remainingSessions).hasSize(2);
+        assertThat(remainingSessions).extracting(Session::getTitle)
+                .containsExactlyInAnyOrder("關聯 anotherTask 的工作階段", "無關聯的工作階段");
+    }
+
+    @Test
+    @DisplayName("根據不存在的 taskId 刪除 Session - 應無影響")
+    void shouldNotDeleteSessionsWhenTaskIdNotExists() {
+        // Given
+        Session session1 = new Session("工作階段1");
+        session1.setTask(testTask);
+        
+        Session session2 = new Session("工作階段2");
+        // 不設定 task
+        
+        sessionRepository.saveAll(List.of(session1, session2));
+        entityManager.flush();
+
+        // When
+        sessionRepository.deleteByTaskId(999L); // 不存在的 taskId
+        entityManager.flush();
+
+        // Then
+        List<Session> allSessions = sessionRepository.findAll();
+        assertThat(allSessions).hasSize(2);
+        assertThat(allSessions).extracting(Session::getTitle)
+                .containsExactlyInAnyOrder("工作階段1", "工作階段2");
+    }
 } 

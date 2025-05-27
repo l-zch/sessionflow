@@ -35,4 +35,9 @@ public interface ScheduleEntryRepository extends JpaRepository<ScheduleEntry, Lo
     @Transactional
     @Query("UPDATE ScheduleEntry se SET se.task = null WHERE se.task.id = :taskId")
     void setTaskToNullByTaskId(@Param("taskId") Long taskId);
+    
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM ScheduleEntry se WHERE se.task.id = :taskId")
+    void deleteByTaskId(@Param("taskId") Long taskId);
 } 

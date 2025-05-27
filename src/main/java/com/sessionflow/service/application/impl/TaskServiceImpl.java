@@ -75,34 +75,34 @@ public class TaskServiceImpl implements TaskService {
     
     @Override
     public void deleteTask(Long id) {
-        log.info("Safely deleting task with id: {}", id);
+        log.info("Deleting task and all related entities with id: {}", id);
         
         if (!taskRepository.existsById(id)) {
             throw new TaskNotFoundException(id);
         }
         
         try {
-            // 1. 先將所有關聯的 Session 的 task 設為 null
-            log.debug("Setting task to null in related sessions");
-            sessionRepository.setTaskToNullByTaskId(id);
+            // 1. 刪除所有關聯的 SessionRecord
+            log.debug("Deleting related session records");
+            sessionRecordRepository.deleteByTaskId(id);
             
-            // 2. 將所有關聯的 SessionRecord 的 task 設為 null
-            log.debug("Setting task to null in related session records");
-            sessionRecordRepository.setTaskToNullByTaskId(id);
+            // 2. 刪除所有關聯的 Session
+            log.debug("Deleting related sessions");
+            sessionRepository.deleteByTaskId(id);
             
-            // 3. 將所有關聯的 ScheduleEntry 的 task 設為 null
-            log.debug("Setting task to null in related schedule entries");
-            scheduleEntryRepository.setTaskToNullByTaskId(id);
+            // 3. 刪除所有關聯的 ScheduleEntry
+            log.debug("Deleting related schedule entries");
+            scheduleEntryRepository.deleteByTaskId(id);
             
             // 4. 最後刪除任務本身
             log.debug("Deleting task");
             taskRepository.deleteById(id);
             
-            log.info("Task deleted successfully with id: {}", id);
+            log.info("Task and all related entities deleted successfully with id: {}", id);
             
         } catch (Exception e) {
-            log.error("Error occurred while deleting task with id: {}", id, e);
-            throw new RuntimeException("Failed to delete task safely", e);
+            log.error("Error occurred while deleting task and related entities with id: {}", id, e);
+            throw new RuntimeException("Failed to delete task and related entities", e);
         }
     }
     

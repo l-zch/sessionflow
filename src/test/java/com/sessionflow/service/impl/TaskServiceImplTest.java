@@ -191,9 +191,9 @@ class TaskServiceImplTest {
         Long taskId = 1L;
         
         when(taskRepository.existsById(taskId)).thenReturn(true);
-        doNothing().when(sessionRepository).setTaskToNullByTaskId(taskId);
-        doNothing().when(sessionRecordRepository).setTaskToNullByTaskId(taskId);
-        doNothing().when(scheduleEntryRepository).setTaskToNullByTaskId(taskId);
+        doNothing().when(sessionRecordRepository).deleteByTaskId(taskId);
+        doNothing().when(sessionRepository).deleteByTaskId(taskId);
+        doNothing().when(scheduleEntryRepository).deleteByTaskId(taskId);
         doNothing().when(taskRepository).deleteById(taskId);
         
         // When
@@ -202,9 +202,9 @@ class TaskServiceImplTest {
         
         // Then
         verify(taskRepository).existsById(taskId);
-        verify(sessionRepository).setTaskToNullByTaskId(taskId);
-        verify(sessionRecordRepository).setTaskToNullByTaskId(taskId);
-        verify(scheduleEntryRepository).setTaskToNullByTaskId(taskId);
+        verify(sessionRecordRepository).deleteByTaskId(taskId);
+        verify(sessionRepository).deleteByTaskId(taskId);
+        verify(scheduleEntryRepository).deleteByTaskId(taskId);
         verify(taskRepository).deleteById(taskId);
     }
     

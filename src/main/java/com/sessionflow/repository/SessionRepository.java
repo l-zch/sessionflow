@@ -22,4 +22,9 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     @Transactional
     @Query("UPDATE Session s SET s.task = null WHERE s.task.id = :taskId")
     void setTaskToNullByTaskId(@Param("taskId") Long taskId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Session s WHERE s.task.id = :taskId")
+    void deleteByTaskId(@Param("taskId") Long taskId);
 } 

@@ -393,4 +393,71 @@ class ScheduleEntryRepositoryIntegrationTest {
         assertThat(savedEntry.getTask().getTitle()).isEqualTo("待刪除任務");
         assertThat(savedEntry.getTitle()).isEqualTo("關聯會議");
     }
+
+    @Test
+    void shouldDeleteScheduleEntriesByTaskId() {
+        // Given
+        Task task1 = new Task("任務1");
+        task1 = entityManager.persistAndFlush(task1);
+        
+        Task task2 = new Task("任務2");
+        task2 = entityManager.persistAndFlush(task2);
+
+        LocalDateTime baseTime = LocalDateTime.of(2024, 1, 15, 10, 0);
+        
+        ScheduleEntry entry1 = new ScheduleEntry("關聯任務1的排程1", baseTime, baseTime.plusHours(1));
+        entry1.setTask(task1);
+        
+        ScheduleEntry entry2 = new ScheduleEntry("關聯任務1的排程2", baseTime.plusHours(2), baseTime.plusHours(3));
+        entry2.setTask(task1);
+        
+        ScheduleEntry entry3 = new ScheduleEntry("關聯任務2的排程", baseTime.plusHours(4), baseTime.plusHours(5));
+        entry3.setTask(task2);
+        
+        ScheduleEntry entry4 = new ScheduleEntry("無關聯的排程", baseTime.plusHours(6), baseTime.plusHours(7));
+        // 不設定 task
+        
+        entityManager.persistAndFlush(entry1);
+        entityManager.persistAndFlush(entry2);
+        entityManager.persistAndFlush(entry3);
+        entityManager.persistAndFlush(entry4);
+
+        // When
+        scheduleEntryRepository.deleteByTaskId(task1.getId());
+        entityManager.flush();
+
+        // Then
+        List<ScheduleEntry> remainingEntries = scheduleEntryRepository.findAll();
+        assertThat(remainingEntries).hasSize(2);
+        assertThat(remainingEntries).extracting(ScheduleEntry::getTitle)
+                .containsExactlyInAnyOrder("關聯任務2的排程", "無關聯的排程");
+    }
+
+    @Test
+    void shouldNotDeleteScheduleEntriesWhenTaskIdNotExists() {
+        // Given
+        Task task = new Task("測試任務");
+        task = entityManager.persistAndFlush(task);
+
+        LocalDateTime baseTime = LocalDateTime.of(2024, 1, 15, 10, 0);
+        
+        ScheduleEntry entry1 = new ScheduleEntry("排程1", baseTime, baseTime.plusHours(1));
+        entry1.setTask(task);
+        
+        ScheduleEntry entry2 = new ScheduleEntry("排程2", baseTime.plusHours(2), baseTime.plusHours(3));
+        // 不設定 task
+        
+        entityManager.persistAndFlush(entry1);
+        entityManager.persistAndFlush(entry2);
+
+        // When
+        scheduleEntryRepository.deleteByTaskId(999L); // 不存在的 taskId
+        entityManager.flush();
+
+        // Then
+        List<ScheduleEntry> allEntries = scheduleEntryRepository.findAll();
+        assertThat(allEntries).hasSize(2);
+        assertThat(allEntries).extracting(ScheduleEntry::getTitle)
+                .containsExactlyInAnyOrder("排程1", "排程2");
+    }
 } 

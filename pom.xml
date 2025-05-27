@@ -140,6 +140,7 @@
                                 <exclude>com/sessionflow/dto/**</exclude>
                                 <exclude>com/sessionflow/model/**</exclude>
                                 <exclude>com/sessionflow/config/**</exclude>
+                                <exclude>com/sessionflow/SessionFlowApplication.class</exclude>
                                 <exclude>com/sessionflow/exception/ErrorResponse.class</exclude>
                                 <exclude>com/sessionflow/controller/HealthController.class</exclude>
                             </excludes>

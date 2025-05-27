@@ -20,6 +20,10 @@ public class ScheduleEntryMapperImpl implements ScheduleEntryMapper {
     
     @Override
     public ScheduleEntry toEntity(ScheduleEntryRequest request) {
+        if (request == null) {
+            return null;
+        }
+        
         ScheduleEntry scheduleEntry = new ScheduleEntry(
                 request.getTitle(),
                 request.getStartAt(),
@@ -39,6 +43,10 @@ public class ScheduleEntryMapperImpl implements ScheduleEntryMapper {
     
     @Override
     public ScheduleEntryResponse toResponse(ScheduleEntry scheduleEntry) {
+        if (scheduleEntry == null) {
+            return null;
+        }
+        
         ScheduleEntryResponse response = new ScheduleEntryResponse();
         response.setId(scheduleEntry.getId());
         response.setTitle(scheduleEntry.getTitle());
@@ -56,6 +64,10 @@ public class ScheduleEntryMapperImpl implements ScheduleEntryMapper {
     
     @Override
     public List<ScheduleEntryResponse> toResponseList(List<ScheduleEntry> scheduleEntries) {
+        if (scheduleEntries == null) {
+            return null;
+        }
+        
         return scheduleEntries.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -63,9 +75,14 @@ public class ScheduleEntryMapperImpl implements ScheduleEntryMapper {
     
     @Override
     public void updateEntityFromRequest(ScheduleEntryRequest request, ScheduleEntry scheduleEntry) {
+        if (request == null || scheduleEntry == null) {
+            return;
+        }
+        
         scheduleEntry.setTitle(request.getTitle());
-        scheduleEntry.setStartAt(request.getStartAt());
+        // 先設定結束時間，再設定開始時間，避免時間驗證問題
         scheduleEntry.setEndAt(request.getEndAt());
+        scheduleEntry.setStartAt(request.getStartAt());
         scheduleEntry.setNote(request.getNote());
         
         // 更新關聯的任務

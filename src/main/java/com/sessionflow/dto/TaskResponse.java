@@ -13,25 +13,25 @@ import java.util.List;
 @Schema(description = "任務回應")
 public class TaskResponse {
     
-    @Schema(description = "任務 ID", example = "1")
+    @Schema(description = "任務 ID", example = "1", nullable = false)
     private Long id;
     
-    @Schema(description = "任務標題", example = "完成專案文件")
+    @Schema(description = "任務標題", example = "完成專案文件", nullable = false)
     private String title;
     
-    @Schema(description = "標籤列表")
+    @Schema(description = "標籤列表", nullable = false)
     private List<TagResponse> tags;
     
-    @Schema(description = "截止時間", example = "2024-01-15T18:00:00")
+    @Schema(description = "截止時間", example = "2024-01-15T18:00:00", nullable = true)
     private LocalDateTime dueTime;
     
-    @Schema(description = "完成時間", example = "2024-01-14T16:30:00")
+    @Schema(description = "完成時間", example = "2024-01-14T16:30:00", nullable = true)
     private LocalDateTime completedAt;
     
-    @Schema(description = "任務備註", example = "需要包含技術規格和使用者手冊")
+    @Schema(description = "任務備註", example = "需要包含技術規格和使用者手冊", nullable = true)
     private String note;
     
-    @Schema(description = "任務狀態", example = "PENDING", allowableValues = {"PENDING", "COMPLETE"})
+    @Schema(description = "任務狀態", example = "PENDING", allowableValues = {"PENDING", "COMPLETE"}, nullable = false)
     private String status;
     
     // Custom constructor for basic fields

@@ -11,7 +11,8 @@ import com.sessionflow.model.Session;
 import com.sessionflow.model.SessionRecord;
 import com.sessionflow.repository.SessionRecordRepository;
 import com.sessionflow.repository.SessionRepository;
-import com.sessionflow.service.application.impl.SessionServiceImpl;
+import com.sessionflow.service.impl.SessionServiceImpl;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

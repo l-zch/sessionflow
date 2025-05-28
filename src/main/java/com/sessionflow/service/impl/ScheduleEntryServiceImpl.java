@@ -1,4 +1,4 @@
-package com.sessionflow.service.application.impl;
+package com.sessionflow.service.impl;
 
 import com.sessionflow.dto.ScheduleEntryRequest;
 import com.sessionflow.dto.ScheduleEntryResponse;

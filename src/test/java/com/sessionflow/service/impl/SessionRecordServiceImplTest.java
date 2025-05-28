@@ -7,7 +7,8 @@ import com.sessionflow.mapper.SessionRecordMapper;
 import com.sessionflow.model.SessionRecord;
 import com.sessionflow.model.Task;
 import com.sessionflow.repository.SessionRecordRepository;
-import com.sessionflow.service.application.impl.SessionRecordServiceImpl;
+import com.sessionflow.service.impl.SessionRecordServiceImpl;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

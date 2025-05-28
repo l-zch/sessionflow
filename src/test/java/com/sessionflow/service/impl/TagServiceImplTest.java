@@ -7,7 +7,8 @@ import com.sessionflow.exception.TagNotFoundException;
 import com.sessionflow.mapper.TagMapper;
 import com.sessionflow.model.Tag;
 import com.sessionflow.repository.TagRepository;
-import com.sessionflow.service.application.impl.TagServiceImpl;
+import com.sessionflow.service.impl.TagServiceImpl;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

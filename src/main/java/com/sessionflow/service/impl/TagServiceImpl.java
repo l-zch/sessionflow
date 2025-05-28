@@ -1,4 +1,4 @@
-package com.sessionflow.service.application.impl;
+package com.sessionflow.service.impl;
 
 import com.sessionflow.dto.TagRequest;
 import com.sessionflow.dto.TagResponse;

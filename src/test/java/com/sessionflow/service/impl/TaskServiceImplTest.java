@@ -7,10 +7,11 @@ import com.sessionflow.mapper.TaskMapper;
 import com.sessionflow.model.Task;
 import com.sessionflow.model.TaskStatus;
 import com.sessionflow.repository.TaskRepository;
+import com.sessionflow.service.impl.TaskServiceImpl;
 import com.sessionflow.repository.SessionRepository;
 import com.sessionflow.repository.SessionRecordRepository;
 import com.sessionflow.repository.ScheduleEntryRepository;
-import com.sessionflow.service.application.impl.TaskServiceImpl;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

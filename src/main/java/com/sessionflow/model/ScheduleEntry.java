@@ -44,27 +44,31 @@ public class ScheduleEntry {
     
     // Custom constructor
     public ScheduleEntry(String title, LocalDateTime startAt, LocalDateTime endAt) {
+        validateTimeRange(startAt, endAt);
         this.title = title;
         this.startAt = startAt;
         this.endAt = endAt;
-        validateTimeRange();
     }
     
     // Override setters with validation
     public void setStartAt(LocalDateTime startAt) {
+        validateTimeRange(startAt, endAt);
         this.startAt = startAt;
-        validateTimeRange();
     }
     
     public void setEndAt(LocalDateTime endAt) {
+        validateTimeRange(startAt, endAt);
         this.endAt = endAt;
-        validateTimeRange();
     }
     
     // Lifecycle methods
     @PrePersist
     @PreUpdate
     protected void validateTimeRange() {
+        validateTimeRange(startAt, endAt);
+    }
+    
+    private void validateTimeRange(LocalDateTime startAt, LocalDateTime endAt) {
         if (startAt != null && endAt != null && !endAt.isAfter(startAt)) {
             throw new IllegalArgumentException("結束時間必須晚於開始時間");
         }

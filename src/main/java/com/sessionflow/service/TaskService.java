@@ -31,4 +31,9 @@ public interface TaskService {
      * 標記任務為完成
      */
     TaskResponse completeTask(Long id);
+    
+    /**
+     * 標記任務為待辦
+     */
+    TaskResponse reopenTask(Long id);
 } 

@@ -81,6 +81,11 @@ public class Task {
         this.completedAt = LocalDateTime.now();
     }
     
+    public void markAsPending() {
+        this.status = TaskStatus.PENDING;
+        this.completedAt = null;
+    }
+    
     public boolean isCompleted() {
         return status == TaskStatus.COMPLETE;
     }

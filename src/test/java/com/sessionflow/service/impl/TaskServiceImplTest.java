@@ -227,13 +227,13 @@ class TaskServiceImplTest {
     }
     
     @Test
-    @DisplayName("標記任務為完成成功")
+    @DisplayName("標記代辦的任務為完成成功")
     void completeTask_Success() {
         // Given
         Long taskId = 1L;
         Task completedTask = new Task("完成專案文件");
         completedTask.setId(taskId);
-        completedTask.complete();
+        completedTask.markAsComplete();
         TaskResponse completedResponse = new TaskResponse(taskId, "完成專案文件", "COMPLETE");
         completedResponse.setCompletedAt(LocalDateTime.now());
         
@@ -253,6 +253,81 @@ class TaskServiceImplTest {
         verify(taskRepository).findById(taskId);
         verify(taskRepository).save(task);
         verify(taskMapper).toResponse(completedTask);
+    }
+    
+
+    @Test
+    @DisplayName("標記已完成的任務為完成，標記任務為完成成功")
+    void markCompletedTaskAsCompleted_Success() {
+        // Given
+        Long taskId = 1L;
+        Task completedTask = new Task("已完成任務");
+        completedTask.setId(taskId);
+        completedTask.markAsComplete();
+        TaskResponse completedResponse = new TaskResponse(taskId, "已完成任務", "COMPLETE");
+        completedResponse.setCompletedAt(LocalDateTime.now());
+        
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(taskRepository.save(task)).thenReturn(completedTask);
+        when(taskMapper.toResponse(completedTask)).thenReturn(completedResponse);
+        
+        // When
+        TaskResponse result = taskService.completeTask(taskId);
+        
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(taskId);
+        assertThat(result.getStatus()).isEqualTo("COMPLETE");
+        assertThat(result.getCompletedAt()).isNotNull();
+        
+        verify(taskRepository).findById(taskId);
+        verify(taskRepository).save(task);
+        verify(taskMapper).toResponse(completedTask);
+    }
+
+    @Test   
+    @DisplayName("標記已完成的任務為待辦成功")
+    void markTaskAsPending_Success() {
+        // Given
+        Long taskId = 1L;
+        Task pendingTask = new Task("待辦任務");
+        pendingTask.setId(taskId);
+        pendingTask.markAsPending();
+        TaskResponse pendingResponse = new TaskResponse(taskId, "待辦任務", "PENDING");
+        pendingResponse.setCompletedAt(null);
+        
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(taskRepository.save(task)).thenReturn(pendingTask);
+        when(taskMapper.toResponse(pendingTask)).thenReturn(pendingResponse);
+        
+        // When
+        TaskResponse result = taskService.reopenTask(taskId);
+        
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(taskId);
+        assertThat(result.getStatus()).isEqualTo("PENDING");
+        assertThat(result.getCompletedAt()).isNull();
+        
+        verify(taskRepository).findById(taskId);
+        verify(taskRepository).save(task);
+        verify(taskMapper).toResponse(pendingTask);
+    }
+    
+    @Test
+    @DisplayName("標記不存在的任務為待辦，應丟出 TaskNotFoundException")
+    void markTaskAsPending_TaskNotFound_ThrowsException() {
+        // Given
+        Long nonExistentId = 999L;
+        
+        when(taskRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+        
+        // When & Then
+        assertThatThrownBy(() -> taskService.reopenTask(nonExistentId))
+                .isInstanceOf(TaskNotFoundException.class)
+                .hasMessage("Task with id 999 not found");
+        
+        verify(taskRepository).findById(nonExistentId);
     }
     
     @Test

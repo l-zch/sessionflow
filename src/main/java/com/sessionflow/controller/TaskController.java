@@ -133,6 +133,30 @@ public class TaskController {
         TaskResponse response = taskService.completeTask(id);
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/{id}/reopen")
+    @Operation(summary = "標記任務為待辦", description = "標記指定任務為待辦狀態")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "任務標記完成成功",
+                content = @Content(mediaType = "application/json", 
+                schema = @Schema(implementation = TaskResponse.class))),
+        @ApiResponse(responseCode = "404", description = "任務不存在",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(name = "Task Not Found", ref = ApiResponseTemplates.TASK_NOT_FOUND_REF))),
+        @ApiResponse(responseCode = "500", description = "伺服器內部錯誤",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(name = "Internal Server Error", ref = ApiResponseTemplates.INTERNAL_SERVER_ERROR_REF)))
+    })
+    public ResponseEntity<TaskResponse> reopenTask(
+            @Parameter(description = "任務 ID", required = true, example = "1")
+            @PathVariable Long id) {
+        log.info("Received request to reopen task with id: {}", id);
+        
+        TaskResponse response = taskService.reopenTask(id);
+        return ResponseEntity.ok(response);
+    }
     
     @DeleteMapping("/{id}")
     @Operation(summary = "刪除任務", description = "根據 ID 刪除任務")

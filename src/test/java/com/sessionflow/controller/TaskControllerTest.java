@@ -232,6 +232,40 @@ class TaskControllerTest {
     }
     
     @Test
+    @DisplayName("PATCH /api/tasks/{id}/reopen - 標記任務待辦成功，回傳 200")
+    void reopenTask_Success_Returns200() throws Exception {
+        // Given
+        Long taskId = 1L;
+        TaskResponse response = new TaskResponse(taskId, "待辦的任務", "PENDING");
+        
+        when(taskService.reopenTask(taskId)).thenReturn(response);
+        
+        // When & Then
+        mockMvc.perform(patch("/api/tasks/{id}/reopen", taskId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(taskId))
+                .andExpect(jsonPath("$.status").value("PENDING"));
+        
+        verify(taskService).reopenTask(taskId);
+    }
+    
+    @Test
+    @DisplayName("PATCH /api/tasks/{id}/reopen - 任務不存在，回傳 404")
+    void reopenTask_TaskNotFound_Returns404() throws Exception {
+        // Given
+        Long nonExistentId = 999L;
+        
+        when(taskService.reopenTask(nonExistentId))
+                .thenThrow(new TaskNotFoundException(nonExistentId));
+        
+        // When & Then
+        mockMvc.perform(patch("/api/tasks/{id}/reopen", nonExistentId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("TASK_NOT_FOUND"));
+        
+        verify(taskService).reopenTask(nonExistentId);
+    }
+    @Test
     @DisplayName("DELETE /api/tasks/{id} - 刪除任務成功，回傳 204")
     void deleteTask_Success_Returns204() throws Exception {
         // Given

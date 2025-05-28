@@ -41,11 +41,11 @@ public class TagController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
+                examples = @ExampleObject(name = "Validation Error", ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "409", description = "標籤名稱重複",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.TAG_NAME_CONFLICT_REF)))
+                examples = @ExampleObject(name = "Tag Name Conflict", ref = ApiResponseTemplates.TAG_NAME_CONFLICT_REF)))
     })
     public ResponseEntity<TagResponse> createTag(
             @Parameter(description = "標籤建立請求", required = true)
@@ -78,15 +78,15 @@ public class TagController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
+                examples = @ExampleObject(name = "Validation Error", ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "404", description = "標籤不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.TAG_NOT_FOUND_REF))),
+                examples = @ExampleObject(name = "Tag Not Found", ref = ApiResponseTemplates.TAG_NOT_FOUND_REF))),
         @ApiResponse(responseCode = "409", description = "標籤名稱重複",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.TAG_NAME_CONFLICT_REF)))
+                examples = @ExampleObject(name = "Tag Name Conflict", ref = ApiResponseTemplates.TAG_NAME_CONFLICT_REF)))
     })
     public ResponseEntity<TagResponse> updateTag(
             @Parameter(description = "標籤 ID", required = true, example = "1")
@@ -106,7 +106,7 @@ public class TagController {
         @ApiResponse(responseCode = "404", description = "標籤不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.TAG_NOT_FOUND_REF)))
+                examples = @ExampleObject(name = "Tag Not Found", ref = ApiResponseTemplates.TAG_NOT_FOUND_REF)))
     })
     public ResponseEntity<Void> deleteTag(
             @Parameter(description = "標籤 ID", required = true, example = "1")

@@ -43,7 +43,7 @@ public class SessionController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF)))
+                examples = @ExampleObject(name = "Validation Error", ref = ApiResponseTemplates.VALIDATION_ERROR_REF)))
     })
     public ResponseEntity<SessionResponse> createSession(
             @Parameter(description = "工作階段建立請求", required = true)
@@ -79,11 +79,11 @@ public class SessionController {
         @ApiResponse(responseCode = "404", description = "工作階段不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.SESSION_NOT_FOUND_REF))),
+                examples = @ExampleObject(name = "Session Not Found", ref = ApiResponseTemplates.SESSION_NOT_FOUND_REF))),
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF)))
+                examples = @ExampleObject(name = "Validation Error", ref = ApiResponseTemplates.VALIDATION_ERROR_REF)))
     })
     public ResponseEntity<SessionRecordResponse> endSession(
             @Parameter(description = "工作階段 ID", required = true, example = "1") @PathVariable Long id,

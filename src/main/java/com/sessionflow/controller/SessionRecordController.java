@@ -42,7 +42,7 @@ public class SessionRecordController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.TYPE_MISMATCH_ERROR_REF)))
+                examples = @ExampleObject(name = "Type Mismatch Error", ref = ApiResponseTemplates.TYPE_MISMATCH_ERROR_REF)))
     })
     public ResponseEntity<List<SessionRecordResponse>> getSessionRecords(
             @Parameter(description = "開始日期 (YYYY-MM-DD)", example = "2024-01-01")
@@ -73,11 +73,11 @@ public class SessionRecordController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
+                examples = @ExampleObject(name = "Validation Error", ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "404", description = "工作階段紀錄不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.SESSION_RECORD_NOT_FOUND_REF)))
+                examples = @ExampleObject(name = "Session Record Not Found", ref = ApiResponseTemplates.SESSION_RECORD_NOT_FOUND_REF)))
     })
     public ResponseEntity<SessionRecordResponse> updateSessionRecord(
             @Parameter(description = "工作階段紀錄ID", required = true, example = "1")
@@ -101,7 +101,7 @@ public class SessionRecordController {
         @ApiResponse(responseCode = "404", description = "工作階段紀錄不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.SESSION_RECORD_NOT_FOUND_REF)))
+                examples = @ExampleObject(name = "Session Record Not Found", ref = ApiResponseTemplates.SESSION_RECORD_NOT_FOUND_REF)))
     })
     public ResponseEntity<Void> deleteSessionRecord(
             @Parameter(description = "工作階段紀錄ID", required = true, example = "1")

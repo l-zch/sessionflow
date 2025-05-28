@@ -43,11 +43,12 @@ public class ScheduleEntryController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
+                examples = @ExampleObject(name = "Validation Error", ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "422", description = "時間區間錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.INVALID_TIME_RANGE_REF)))
+                            examples = @ExampleObject(name = "Invalid Time Range", 
+                            ref = ApiResponseTemplates.INVALID_TIME_RANGE_REF)))
     })
     public ResponseEntity<ScheduleEntryResponse> createScheduleEntry(
             @Parameter(description = "排程建立請求", required = true)
@@ -67,15 +68,16 @@ public class ScheduleEntryController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
+                examples = @ExampleObject(name = "Validation Error", ref = ApiResponseTemplates.VALIDATION_ERROR_REF))),
         @ApiResponse(responseCode = "404", description = "排程不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.SCHEDULE_ENTRY_NOT_FOUND_REF))),
+                examples = @ExampleObject(name = "Schedule Entry Not Found", ref = ApiResponseTemplates.SCHEDULE_ENTRY_NOT_FOUND_REF))),
         @ApiResponse(responseCode = "422", description = "時間區間錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.INVALID_TIME_RANGE_REF)))
+                examples = @ExampleObject(name = "Invalid Time Range", 
+                ref = ApiResponseTemplates.INVALID_TIME_RANGE_REF)))
     })
     public ResponseEntity<ScheduleEntryResponse> updateScheduleEntry(
             @Parameter(description = "排程 ID", required = true, example = "1") @PathVariable Long id,
@@ -94,7 +96,7 @@ public class ScheduleEntryController {
         @ApiResponse(responseCode = "404", description = "排程不存在",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.SCHEDULE_ENTRY_NOT_FOUND_REF)))
+                examples = @ExampleObject(name = "Schedule Entry Not Found", ref = ApiResponseTemplates.SCHEDULE_ENTRY_NOT_FOUND_REF)))
     })
     public ResponseEntity<Void> deleteScheduleEntry(
             @Parameter(description = "排程 ID", required = true, example = "1") @PathVariable Long id) {
@@ -113,7 +115,7 @@ public class ScheduleEntryController {
         @ApiResponse(responseCode = "400", description = "請求參數錯誤",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponse.class),
-                examples = @ExampleObject(ref = ApiResponseTemplates.TYPE_MISMATCH_ERROR_REF)))
+                examples = @ExampleObject(name = "Type Mismatch Error", ref = ApiResponseTemplates.TYPE_MISMATCH_ERROR_REF)))
     })
     public ResponseEntity<List<ScheduleEntryResponse>> getScheduleEntries(
             @Parameter(description = "開始日期", required = true, example = "2024-01-15")

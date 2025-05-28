@@ -38,7 +38,7 @@ public class HealthController {
             @ApiResponse(responseCode = "500", description = "系統內部錯誤",
                     content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class),
-                    examples = @ExampleObject(ref = ApiResponseTemplates.INTERNAL_SERVER_ERROR_REF)))
+                    examples = @ExampleObject(name = "Internal Server Error", ref = ApiResponseTemplates.INTERNAL_SERVER_ERROR_REF)))
     })
     public ResponseEntity<Map<String, Object>> health() {
         return ResponseEntity.ok(Map.of(

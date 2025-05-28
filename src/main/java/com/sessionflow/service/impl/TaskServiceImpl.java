@@ -107,11 +107,25 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
 
-        task.complete();
+        task.markAsComplete();
         Task completedTask = taskRepository.save(task);
 
         log.info("Task completed successfully with id: {}", completedTask.getId());
         return taskMapper.toResponse(completedTask);
+    }
+
+    @Override
+    public TaskResponse reopenTask(Long id) {
+        log.info("Marking task as pending with id: {}", id);
+
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException(id));
+
+        task.markAsPending();
+        Task pendingTask = taskRepository.save(task);
+
+        log.info("Task marked as pending successfully with id: {}", pendingTask.getId());
+        return taskMapper.toResponse(pendingTask);
     }
 
     private TaskStatus parseTaskStatus(String status) {

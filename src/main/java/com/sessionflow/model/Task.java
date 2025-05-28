@@ -76,7 +76,7 @@ public class Task {
     }
     
     // Business methods
-    public void complete() {
+    public void markAsComplete() {
         this.status = TaskStatus.COMPLETE;
         this.completedAt = LocalDateTime.now();
     }

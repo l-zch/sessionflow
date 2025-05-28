@@ -102,7 +102,7 @@ class TaskTest {
         LocalDateTime before = LocalDateTime.now();
         
         // When
-        task.complete();
+        task.markAsComplete();
         
         // Then
         assertEquals(TaskStatus.COMPLETE, task.getStatus());
@@ -111,6 +111,24 @@ class TaskTest {
         assertTrue(task.getCompletedAt().isAfter(before));
     }
 
+    @Test
+    @DisplayName("Should mark task as pending")
+    void shouldMarkTaskAsPending() {
+        // Given
+        task.setTitle("Test Task");
+        task.setStatus(TaskStatus.COMPLETE);
+        LocalDateTime before = LocalDateTime.now();
+
+        // When
+        task.markAsPending();
+        
+        // Then
+        assertEquals(TaskStatus.PENDING, task.getStatus());
+        assertNull(task.getCompletedAt());
+        assertFalse(task.isCompleted());
+    }
+
+        
     @Test
     @DisplayName("Should handle tags correctly")
     void shouldHandleTagsCorrectly() {

@@ -128,7 +128,7 @@ class TaskRepositoryIntegrationTest {
         // Given
         Task pendingTask = new Task("待辦任務");
         Task completedTask = new Task("已完成任務");
-        completedTask.complete();
+        completedTask.markAsComplete();
         
         taskRepository.saveAll(List.of(pendingTask, completedTask));
         entityManager.flush();
@@ -191,7 +191,7 @@ class TaskRepositoryIntegrationTest {
         entityManager.flush();
 
         // When
-        savedTask.complete();
+        savedTask.markAsComplete();
         Task completedTask = taskRepository.save(savedTask);
         entityManager.flush();
 
@@ -352,7 +352,7 @@ class TaskRepositoryIntegrationTest {
         Task pendingTask1 = new Task("待辦任務1");
         Task pendingTask2 = new Task("待辦任務2");
         Task completedTask = new Task("已完成任務");
-        completedTask.complete();
+        completedTask.markAsComplete();
         
         taskRepository.saveAll(List.of(pendingTask1, completedTask, pendingTask2));
         entityManager.flush();

@@ -8,7 +8,6 @@ import com.sessionflow.mapper.ScheduleEntryMapper;
 import com.sessionflow.model.ScheduleEntry;
 import com.sessionflow.model.Task;
 import com.sessionflow.repository.ScheduleEntryRepository;
-import com.sessionflow.service.impl.ScheduleEntryServiceImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

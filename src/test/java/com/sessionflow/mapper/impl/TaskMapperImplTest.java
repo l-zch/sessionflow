@@ -209,7 +209,7 @@ class TaskMapperImplTest {
         assertThat(result.getTitle()).isEqualTo("簡單任務");
         assertThat(result.getStatus()).isEqualTo("COMPLETE");
         assertThat(result.getCompletedAt()).isEqualTo(LocalDateTime.of(2024, 1, 16, 12, 0));
-        assertThat(result.getTags()).isNull();
+        assertThat(result.getTags()).isEmpty();
 
         verify(tagMapper, never()).toResponse(any());
     }
@@ -228,7 +228,7 @@ class TaskMapperImplTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(3L);
-        assertThat(result.getTags()).isNull();
+        assertThat(result.getTags()).isEmpty();
 
         verify(tagMapper, never()).toResponse(any());
     }

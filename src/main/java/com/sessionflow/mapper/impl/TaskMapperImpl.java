@@ -61,11 +61,11 @@ public class TaskMapperImpl implements TaskMapper {
         response.setStatus(task.getStatus().getValue());
         
         // 轉換標籤
-        if (task.getTags() != null && !task.getTags().isEmpty()) {
-            response.setTags(task.getTags().stream()
-                    .map(tagMapper::toResponse)
-                    .collect(Collectors.toList()));
-        }
+        response.setTags(task.getTags() != null && !task.getTags().isEmpty()
+                ? task.getTags().stream()
+                        .map(tagMapper::toResponse)
+                        .collect(Collectors.toList())
+                : List.of());
         
         return response;
     }

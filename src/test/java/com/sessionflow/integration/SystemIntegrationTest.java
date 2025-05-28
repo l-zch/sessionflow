@@ -96,8 +96,6 @@ class SystemIntegrationTest {
         SessionRecordCreateRequest recordRequest = new SessionRecordCreateRequest();
         recordRequest.setSessionId(createdSession.getId());
         recordRequest.setCompletionNote("完成了基本架構設計");
-        recordRequest.setStartTime(LocalDateTime.now().minusHours(1));
-        recordRequest.setPlannedNotes("計劃撰寫架構圖");
         
         SessionRecordResponse createdRecord = sessionService.endSession(createdSession.getId(), recordRequest);
         assertThat(createdRecord).isNotNull();
@@ -208,7 +206,6 @@ class SystemIntegrationTest {
         SessionRecordCreateRequest endRequest = new SessionRecordCreateRequest();
         endRequest.setSessionId(session.getId());
         endRequest.setCompletionNote("會話順利完成");
-        endRequest.setStartTime(LocalDateTime.now().minusHours(1));
         
         SessionRecordResponse record = sessionService.endSession(session.getId(), endRequest);
         assertThat(record).isNotNull();
@@ -233,14 +230,12 @@ class SystemIntegrationTest {
         SessionResponse session1 = sessionService.createSession(new SessionRequest("早上會話"));
         SessionRecordCreateRequest record1Request = new SessionRecordCreateRequest();
         record1Request.setSessionId(session1.getId());
-        record1Request.setStartTime(LocalDateTime.now().minusHours(3));
         
         SessionRecordResponse record1 = sessionService.endSession(session1.getId(), record1Request);
         
         SessionResponse session2 = sessionService.createSession(new SessionRequest("下午會話"));
         SessionRecordCreateRequest record2Request = new SessionRecordCreateRequest();
         record2Request.setSessionId(session2.getId());
-        record2Request.setStartTime(LocalDateTime.now().minusHours(1));
         
         SessionRecordResponse record2 = sessionService.endSession(session2.getId(), record2Request);
         
@@ -379,12 +374,10 @@ class SystemIntegrationTest {
         SessionRecordCreateRequest frontendRecord = new SessionRecordCreateRequest();
         frontendRecord.setSessionId(frontendSession.getId());
         frontendRecord.setCompletionNote("完成登入頁面組件");
-        frontendRecord.setStartTime(LocalDateTime.now().minusHours(3));
         
         SessionRecordCreateRequest backendRecord = new SessionRecordCreateRequest();
         backendRecord.setSessionId(backendSession.getId());
         backendRecord.setCompletionNote("完成用戶認證API");
-        backendRecord.setStartTime(LocalDateTime.now().minusHours(2));
         
         SessionRecordResponse record1 = sessionService.endSession(frontendSession.getId(), frontendRecord);
         SessionRecordResponse record2 = sessionService.endSession(backendSession.getId(), backendRecord);

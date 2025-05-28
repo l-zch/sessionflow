@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -19,8 +18,4 @@ public class SessionRecordCreateRequest {
     
     @Schema(description = "完成備註", example = "完成了主要功能的 80%")
     private String completionNote;
-    
-    private LocalDateTime startTime;
-    
-    private String plannedNotes;
 } 

@@ -14,6 +14,8 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("unused")
+
 @DisplayName("Task Model Tests")
 class TaskTest {
 

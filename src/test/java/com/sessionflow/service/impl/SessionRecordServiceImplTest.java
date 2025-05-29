@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("unused")
+
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SessionRecordService 單元測試")
 class SessionRecordServiceImplTest {

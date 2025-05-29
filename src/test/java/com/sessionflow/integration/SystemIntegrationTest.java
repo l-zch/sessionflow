@@ -17,6 +17,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
+@SuppressWarnings("unused")
+
 /**
  * 系統級整合測試
  * 模擬真實使用流程，驗證整個系統的資料與邏輯行為

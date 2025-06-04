@@ -130,7 +130,8 @@ public class TaskServiceImpl implements TaskService {
 
     private TaskStatus parseTaskStatus(String status) {
         try {
-            return switch (status.toLowerCase()) {
+            String normalized = status.trim().toLowerCase();
+            return switch (normalized) {
                 case "pending" -> TaskStatus.PENDING;
                 case "complete" -> TaskStatus.COMPLETE;
                 default -> throw new IllegalArgumentException("Invalid task status: " + status);

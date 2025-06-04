@@ -396,4 +396,25 @@ class TaskServiceImplTest {
         verify(taskRepository, never()).findByStatusOrderByCreatedAtDesc(any());
         verify(taskMapper).toResponseList(tasks);
     }
-} 
+
+    @Test
+    @DisplayName("查詢任務時狀態包含前後空白也能正確解析")
+    void getAllTasks_StatusWithWhitespace_Success() {
+        // Given
+        List<Task> tasks = List.of(task);
+        List<TaskResponse> expectedResponses = List.of(taskResponse);
+
+        when(taskRepository.findByStatusOrderByCreatedAtDesc(TaskStatus.PENDING)).thenReturn(tasks);
+        when(taskMapper.toResponseList(tasks)).thenReturn(expectedResponses);
+
+        // When
+        List<TaskResponse> result = taskService.getAllTasks("  PENDING  ");
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(1);
+
+        verify(taskRepository).findByStatusOrderByCreatedAtDesc(TaskStatus.PENDING);
+        verify(taskMapper).toResponseList(tasks);
+    }
+}

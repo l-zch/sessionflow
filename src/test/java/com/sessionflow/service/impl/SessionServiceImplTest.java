@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,6 +44,9 @@ class SessionServiceImplTest {
     
     @Mock
     private SessionRecordMapper sessionRecordMapper;
+    
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
     
     @InjectMocks
     private SessionServiceImpl sessionService;
@@ -212,5 +216,61 @@ class SessionServiceImplTest {
         verify(sessionMapper).toEntity(requestWithTask);
         verify(sessionRepository).save(sessionWithTask);
         verify(sessionMapper).toResponse(sessionWithTask);
+    }
+
+    @Test
+    @DisplayName("根據任務ID查詢工作階段ID列表成功")
+    void findIdsByTaskId_Success() {
+        // Given
+        Long taskId = 1L;
+        Session session2 = new Session("另一個工作階段");
+        session2.setId(2L);
+        List<Session> sessions = List.of(session, session2);
+
+        when(sessionRepository.findByTaskId(taskId)).thenReturn(sessions);
+
+        // When
+        List<Long> result = sessionService.findIdsByTaskId(taskId);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(2);
+        assertThat(result).containsExactly(1L, 2L);
+
+        verify(sessionRepository).findByTaskId(taskId);
+    }
+
+    @Test
+    @DisplayName("根據任務ID查詢工作階段ID列表 - 無結果")
+    void findIdsByTaskId_EmptyResult() {
+        // Given
+        Long taskId = 999L;
+        List<Session> emptySessions = List.of();
+
+        when(sessionRepository.findByTaskId(taskId)).thenReturn(emptySessions);
+
+        // When
+        List<Long> result = sessionService.findIdsByTaskId(taskId);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result).isEmpty();
+
+        verify(sessionRepository).findByTaskId(taskId);
+    }
+
+    @Test
+    @DisplayName("根據任務ID刪除工作階段成功")
+    void deleteByTaskId_Success() {
+        // Given
+        Long taskId = 1L;
+
+        doNothing().when(sessionRepository).deleteByTaskId(taskId);
+
+        // When
+        sessionService.deleteByTaskId(taskId);
+
+        // Then
+        verify(sessionRepository).deleteByTaskId(taskId);
     }
 } 

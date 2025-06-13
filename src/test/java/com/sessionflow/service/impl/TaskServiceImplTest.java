@@ -10,6 +10,9 @@ import com.sessionflow.repository.TaskRepository;
 import com.sessionflow.repository.SessionRepository;
 import com.sessionflow.repository.SessionRecordRepository;
 import com.sessionflow.repository.ScheduleEntryRepository;
+import com.sessionflow.service.SessionService;
+import com.sessionflow.service.SessionRecordService;
+import com.sessionflow.service.ScheduleEntryService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,6 +49,18 @@ class TaskServiceImplTest {
     
     @Mock
     private ScheduleEntryRepository scheduleEntryRepository;
+    
+    @Mock
+    private SessionService sessionService;
+    
+    @Mock
+    private SessionRecordService sessionRecordService;
+    
+    @Mock
+    private ScheduleEntryService scheduleEntryService;
+    
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
     
     @InjectMocks
     private TaskServiceImpl taskService;
@@ -191,9 +207,12 @@ class TaskServiceImplTest {
         Long taskId = 1L;
         
         when(taskRepository.existsById(taskId)).thenReturn(true);
-        doNothing().when(sessionRecordRepository).deleteByTaskId(taskId);
-        doNothing().when(sessionRepository).deleteByTaskId(taskId);
-        doNothing().when(scheduleEntryRepository).deleteByTaskId(taskId);
+        when(sessionService.findIdsByTaskId(taskId)).thenReturn(List.of(1L, 2L));
+        when(sessionRecordService.findIdsByTaskId(taskId)).thenReturn(List.of(3L, 4L));
+        when(scheduleEntryService.findIdsByTaskId(taskId)).thenReturn(List.of(5L, 6L));
+        doNothing().when(sessionRecordService).deleteByTaskId(taskId);
+        doNothing().when(sessionService).deleteByTaskId(taskId);
+        doNothing().when(scheduleEntryService).deleteByTaskId(taskId);
         doNothing().when(taskRepository).deleteById(taskId);
         
         // When
@@ -202,9 +221,12 @@ class TaskServiceImplTest {
         
         // Then
         verify(taskRepository).existsById(taskId);
-        verify(sessionRecordRepository).deleteByTaskId(taskId);
-        verify(sessionRepository).deleteByTaskId(taskId);
-        verify(scheduleEntryRepository).deleteByTaskId(taskId);
+        verify(sessionService).findIdsByTaskId(taskId);
+        verify(sessionRecordService).findIdsByTaskId(taskId);
+        verify(scheduleEntryService).findIdsByTaskId(taskId);
+        verify(sessionRecordService).deleteByTaskId(taskId);
+        verify(sessionService).deleteByTaskId(taskId);
+        verify(scheduleEntryService).deleteByTaskId(taskId);
         verify(taskRepository).deleteById(taskId);
     }
     

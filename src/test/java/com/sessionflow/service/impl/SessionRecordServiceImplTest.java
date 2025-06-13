@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,6 +37,9 @@ class SessionRecordServiceImplTest {
 
     @Mock
     private SessionRecordMapper sessionRecordMapper;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private SessionRecordServiceImpl sessionRecordService;
@@ -488,5 +492,59 @@ class SessionRecordServiceImplTest {
 
         verify(sessionRecordRepository).existsById(nonExistentId);
         verify(sessionRecordRepository, never()).deleteById(any());
+    }
+
+    @Test
+    @DisplayName("根據任務ID查詢工作階段紀錄ID列表成功")
+    void findIdsByTaskId_Success() {
+        // Given
+        Long taskId = 1L;
+        List<SessionRecord> sessionRecords = List.of(sessionRecord1, sessionRecord2);
+
+        when(sessionRecordRepository.findByTaskId(taskId)).thenReturn(sessionRecords);
+
+        // When
+        List<Long> result = sessionRecordService.findIdsByTaskId(taskId);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(2);
+        assertThat(result).containsExactly(1L, 2L);
+
+        verify(sessionRecordRepository).findByTaskId(taskId);
+    }
+
+    @Test
+    @DisplayName("根據任務ID查詢工作階段紀錄ID列表 - 無結果")
+    void findIdsByTaskId_EmptyResult() {
+        // Given
+        Long taskId = 999L;
+        List<SessionRecord> emptyRecords = List.of();
+
+        when(sessionRecordRepository.findByTaskId(taskId)).thenReturn(emptyRecords);
+
+        // When
+        List<Long> result = sessionRecordService.findIdsByTaskId(taskId);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result).isEmpty();
+
+        verify(sessionRecordRepository).findByTaskId(taskId);
+    }
+
+    @Test
+    @DisplayName("根據任務ID刪除工作階段紀錄成功")
+    void deleteByTaskId_Success() {
+        // Given
+        Long taskId = 1L;
+
+        doNothing().when(sessionRecordRepository).deleteByTaskId(taskId);
+
+        // When
+        sessionRecordService.deleteByTaskId(taskId);
+
+        // Then
+        verify(sessionRecordRepository).deleteByTaskId(taskId);
     }
 }

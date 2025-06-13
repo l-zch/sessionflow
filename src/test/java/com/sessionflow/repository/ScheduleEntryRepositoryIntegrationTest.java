@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
@@ -26,9 +25,6 @@ class ScheduleEntryRepositoryIntegrationTest {
 
     @Autowired
     private ScheduleEntryRepository scheduleEntryRepository;
-
-    @Autowired
-    private TaskRepository taskRepository;
 
     @Test
     void shouldCreateScheduleEntrySuccessfully() {

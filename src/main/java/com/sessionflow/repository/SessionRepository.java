@@ -18,6 +18,12 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
      */
     List<Session> findAllByOrderByIdDesc();
 
+    /**
+     * 根據任務 ID 查詢所有相關的工作階段
+     */
+    @Query("SELECT s FROM Session s WHERE s.task.id = :taskId")
+    List<Session> findByTaskId(@Param("taskId") Long taskId);
+
     @Modifying
     @Transactional
     @Query("UPDATE Session s SET s.task = null WHERE s.task.id = :taskId")

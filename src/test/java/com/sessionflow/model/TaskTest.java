@@ -34,10 +34,10 @@ class TaskTest {
     void shouldCreateTaskWithTitle() {
         // Given
         String title = "完成專案文件";
-        
+
         // When
         Task task = new Task(title);
-        
+
         // Then
         assertEquals(title, task.getTitle());
         assertEquals(TaskStatus.PENDING, task.getStatus());
@@ -52,10 +52,10 @@ class TaskTest {
     void shouldValidateTitleIsNotBlank() {
         // Given
         task.setTitle("");
-        
+
         // When
         Set<ConstraintViolation<Task>> violations = validator.validate(task);
-        
+
         // Then
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream()
@@ -68,10 +68,10 @@ class TaskTest {
         // Given
         String longTitle = "a".repeat(256);
         task.setTitle(longTitle);
-        
+
         // When
         Set<ConstraintViolation<Task>> violations = validator.validate(task);
-        
+
         // Then
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream()
@@ -85,10 +85,10 @@ class TaskTest {
         String longNote = "a".repeat(2001);
         task.setTitle("Valid Title");
         task.setNote(longNote);
-        
+
         // When
         Set<ConstraintViolation<Task>> violations = validator.validate(task);
-        
+
         // Then
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream()
@@ -102,10 +102,10 @@ class TaskTest {
         task.setTitle("Test Task");
         task.setStatus(TaskStatus.PENDING);
         LocalDateTime before = LocalDateTime.now();
-        
+
         // When
         task.markAsComplete();
-        
+
         // Then
         assertEquals(TaskStatus.COMPLETE, task.getStatus());
         assertTrue(task.isCompleted());
@@ -123,14 +123,13 @@ class TaskTest {
 
         // When
         task.markAsPending();
-        
+
         // Then
         assertEquals(TaskStatus.PENDING, task.getStatus());
         assertNull(task.getCompletedAt());
         assertFalse(task.isCompleted());
     }
 
-        
     @Test
     @DisplayName("Should handle tags correctly")
     void shouldHandleTagsCorrectly() {
@@ -140,11 +139,11 @@ class TaskTest {
         tag1.setId(1L); // Set ID for proper equals comparison
         Tag tag2 = new Tag("重要", "#33FF57");
         tag2.setId(2L); // Set ID for proper equals comparison
-        
+
         // When
         task.getTags().add(tag1);
         task.getTags().add(tag2);
-        
+
         // Then
         assertEquals(2, task.getTags().size());
         assertTrue(task.getTags().contains(tag1));
@@ -157,17 +156,18 @@ class TaskTest {
         // Given
         LocalDateTime before = LocalDateTime.now().minusSeconds(1);
         task.setTitle("Test Task");
-        
+
         // When
         task.onCreate();
-        
+
         // Then
         assertNotNull(task.getCreatedAt());
         assertNotNull(task.getUpdatedAt());
         assertTrue(task.getCreatedAt().isAfter(before));
         assertTrue(task.getUpdatedAt().isAfter(before));
         // Use a small tolerance for timestamp comparison
-        assertTrue(Math.abs(Duration.between(task.getCreatedAt(), task.getUpdatedAt()).toNanos()) < 1_000_000); // 1ms tolerance
+        assertTrue(Math.abs(Duration.between(task.getCreatedAt(), task.getUpdatedAt()).toNanos()) < 1_000_000); // 1ms
+                                                                                                                // tolerance
     }
 
     @Test
@@ -178,13 +178,13 @@ class TaskTest {
         task.onCreate();
         LocalDateTime originalCreatedAt = task.getCreatedAt();
         LocalDateTime originalUpdatedAt = task.getUpdatedAt();
-        
+
         // Wait a bit to ensure different timestamp
         Thread.sleep(10);
-        
+
         // When
         task.onUpdate();
-        
+
         // Then
         assertEquals(originalCreatedAt, task.getCreatedAt()); // createdAt should not change
         assertTrue(task.getUpdatedAt().isAfter(originalUpdatedAt));
@@ -196,10 +196,10 @@ class TaskTest {
         // Given
         task.setTitle("Test Task");
         task.setNote(null);
-        
+
         // When
         Set<ConstraintViolation<Task>> violations = validator.validate(task);
-        
+
         // Then
         assertTrue(violations.isEmpty()); // null note should be allowed
         assertNull(task.getNote());
@@ -210,7 +210,7 @@ class TaskTest {
     void shouldHandleEmptyTagsSet() {
         // Given
         task.setTitle("Test Task");
-        
+
         // When & Then
         assertNotNull(task.getTags());
         assertTrue(task.getTags().isEmpty());
@@ -223,10 +223,10 @@ class TaskTest {
         // Given
         task.setTitle("Test Task");
         LocalDateTime dueTime = LocalDateTime.now().plusDays(1);
-        
+
         // When
         task.setDueTime(dueTime);
-        
+
         // Then
         assertEquals(dueTime, task.getDueTime());
     }
@@ -237,12 +237,12 @@ class TaskTest {
         // Given
         task.setTitle("Test Task");
         task.setDueTime(null);
-        
+
         // When
         Set<ConstraintViolation<Task>> violations = validator.validate(task);
-        
+
         // Then
         assertTrue(violations.isEmpty()); // null due time should be allowed
         assertNull(task.getDueTime());
     }
-} 
+}

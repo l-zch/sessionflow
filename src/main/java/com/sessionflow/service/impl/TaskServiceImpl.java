@@ -1,5 +1,12 @@
 package com.sessionflow.service.impl;
 
+import java.util.List;
+import java.util.ArrayList;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sessionflow.dto.TaskRequest;
 import com.sessionflow.dto.TaskResponse;
 import com.sessionflow.exception.TaskNotFoundException;
@@ -11,12 +18,15 @@ import com.sessionflow.repository.SessionRepository;
 import com.sessionflow.repository.SessionRecordRepository;
 import com.sessionflow.repository.ScheduleEntryRepository;
 import com.sessionflow.service.TaskService;
+import com.sessionflow.service.SessionService;
+import com.sessionflow.service.SessionRecordService;
+import com.sessionflow.service.ScheduleEntryService;
+import com.sessionflow.event.ResourceChangedEvent;
+import com.sessionflow.common.NotificationType;
+import com.sessionflow.dto.ResourceChangedNotification.Affected;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,9 +36,10 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
-    private final SessionRepository sessionRepository;
-    private final SessionRecordRepository sessionRecordRepository;
-    private final ScheduleEntryRepository scheduleEntryRepository;
+    private final ApplicationEventPublisher eventPublisher;
+    private final SessionService sessionService;
+    private final SessionRecordService sessionRecordService;
+    private final ScheduleEntryService scheduleEntryService;
 
     @Override
     public TaskResponse createTask(TaskRequest taskRequest) {
@@ -36,9 +47,19 @@ public class TaskServiceImpl implements TaskService {
 
         Task task = taskMapper.toEntity(taskRequest);
         Task savedTask = taskRepository.save(task);
+        TaskResponse response = taskMapper.toResponse(savedTask);
+
+        // 發布任務建立事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<>(
+            NotificationType.TASK_CREATE,
+            savedTask.getId(),
+            null,
+            response,
+            null
+        ));
 
         log.info("Task created successfully with id: {}", savedTask.getId());
-        return taskMapper.toResponse(savedTask);
+        return response;
     }
 
     @Override
@@ -68,35 +89,70 @@ public class TaskServiceImpl implements TaskService {
 
         taskMapper.updateEntityFromRequest(existingTask, taskRequest);
         Task updatedTask = taskRepository.save(existingTask);
+        TaskResponse response = taskMapper.toResponse(updatedTask);
+
+        // 發布任務更新事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<>(
+            NotificationType.TASK_UPDATE,
+            updatedTask.getId(),
+            null,
+            response,
+            null
+        ));
 
         log.info("Task updated successfully with id: {}", updatedTask.getId());
-        return taskMapper.toResponse(updatedTask);
+        return response;
     }
 
     @Override
     public void deleteTask(Long id) {
-        log.info("Deleting task and all related entities with id: {}", id);
+        log.info("Deleting task with id: {}", id);
 
         if (!taskRepository.existsById(id)) {
             throw new TaskNotFoundException(id);
         }
 
+        // 收集級聯刪除的影響範圍
+        List<Long> sessionIds = sessionService.findIdsByTaskId(id);
+        List<Long> sessionRecordIds = sessionRecordService.findIdsByTaskId(id);
+        List<Long> scheduleEntryIds = scheduleEntryService.findIdsByTaskId(id);
+
         // 1. 刪除所有關聯的 SessionRecord
         log.debug("Deleting related session records");
-        sessionRecordRepository.deleteByTaskId(id);
+        sessionRecordService.deleteByTaskId(id);
 
         // 2. 刪除所有關聯的 Session
         log.debug("Deleting related sessions");
-        sessionRepository.deleteByTaskId(id);
+        sessionService.deleteByTaskId(id);
 
         // 3. 刪除所有關聯的 ScheduleEntry
         log.debug("Deleting related schedule entries");
-        scheduleEntryRepository.deleteByTaskId(id);
-
+        scheduleEntryService.deleteByTaskId(id);
+        
         // 4. 最後刪除任務本身
         log.debug("Deleting task");
         taskRepository.deleteById(id);
 
+        // 建立 affected 列表
+        List<Affected> affected = new ArrayList<>();
+        if (!sessionIds.isEmpty()) {
+            affected.add(new Affected(NotificationType.SESSION_DELETE, sessionIds));
+        }
+        if (!sessionRecordIds.isEmpty()) {
+            affected.add(new Affected(NotificationType.SESSION_RECORD_DELETE, sessionRecordIds));
+        }
+        if (!scheduleEntryIds.isEmpty()) {
+            affected.add(new Affected(NotificationType.SCHEDULE_ENTRY_DELETE, scheduleEntryIds));
+        }
+        // 發布任務刪除事件（包含級聯影響）
+        eventPublisher.publishEvent(new ResourceChangedEvent<TaskResponse>(
+            NotificationType.TASK_DELETE,
+            id,
+            null,
+            null,
+            affected.isEmpty() ? null : affected
+        ));
+        
         log.info("Task and all related entities deleted successfully with id: {}", id);
     }
 
@@ -109,9 +165,19 @@ public class TaskServiceImpl implements TaskService {
 
         task.markAsComplete();
         Task completedTask = taskRepository.save(task);
+        TaskResponse response = taskMapper.toResponse(completedTask);
+
+        // 發布任務完成事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<>(
+            NotificationType.TASK_UPDATE,
+            completedTask.getId(),
+            null,
+            response,
+            null
+        ));
 
         log.info("Task completed successfully with id: {}", completedTask.getId());
-        return taskMapper.toResponse(completedTask);
+        return response;
     }
 
     @Override
@@ -123,9 +189,19 @@ public class TaskServiceImpl implements TaskService {
 
         task.markAsPending();
         Task pendingTask = taskRepository.save(task);
+        TaskResponse response = taskMapper.toResponse(pendingTask);
+
+        // 發布任務重新開啟事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<>(
+            NotificationType.TASK_UPDATE,
+            pendingTask.getId(),
+            null,
+            response,
+            null
+        ));
 
         log.info("Task marked as pending successfully with id: {}", pendingTask.getId());
-        return taskMapper.toResponse(pendingTask);
+        return response;
     }
 
     private TaskStatus parseTaskStatus(String status) {

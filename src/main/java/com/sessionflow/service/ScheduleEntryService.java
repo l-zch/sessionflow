@@ -27,4 +27,19 @@ public interface ScheduleEntryService {
      * 根據指定時間區間查詢所有排程
      */
     List<ScheduleEntryResponse> getScheduleEntries(LocalDate startDate, LocalDate endDate);
+    
+    /**
+     * 根據任務 ID 查詢相關的排程項目 ID 列表
+     * 
+     * @param taskId 任務 ID
+     * @return 排程項目 ID 列表
+     */
+    List<Long> findIdsByTaskId(Long taskId);
+    
+    /**
+     * 根據任務 ID 刪除相關的排程項目
+     * 
+     * @param taskId 任務 ID
+     */
+    void deleteByTaskId(Long taskId);
 } 

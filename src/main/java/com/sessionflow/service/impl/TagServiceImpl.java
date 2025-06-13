@@ -8,8 +8,11 @@ import com.sessionflow.mapper.TagMapper;
 import com.sessionflow.model.Tag;
 import com.sessionflow.repository.TagRepository;
 import com.sessionflow.service.TagService;
+import com.sessionflow.event.ResourceChangedEvent;
+import com.sessionflow.common.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,7 @@ public class TagServiceImpl implements TagService {
     
     private final TagRepository tagRepository;
     private final TagMapper tagMapper;
+    private final ApplicationEventPublisher eventPublisher;
     
     @Override
     public TagResponse createTag(TagRequest request) {
@@ -37,9 +41,19 @@ public class TagServiceImpl implements TagService {
         // 建立並儲存標籤
         Tag tag = tagMapper.toEntity(request);
         Tag savedTag = tagRepository.save(tag);
+        TagResponse response = tagMapper.toResponse(savedTag);
+        
+        // 發布 Tag 建立事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<>(
+            NotificationType.TAG_CREATE,
+            savedTag.getId(),
+            null,
+            response,
+            null
+        ));
         
         log.info("Tag created successfully with id: {}", savedTag.getId());
-        return tagMapper.toResponse(savedTag);
+        return response;
     }
     
     @Override
@@ -73,9 +87,19 @@ public class TagServiceImpl implements TagService {
         // 更新標籤
         tagMapper.updateEntityFromRequest(existingTag, request);
         Tag updatedTag = tagRepository.save(existingTag);
+        TagResponse response = tagMapper.toResponse(updatedTag);
+        
+        // 發布 Tag 更新事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<>(
+            NotificationType.TAG_UPDATE,
+            updatedTag.getId(),
+            null,
+            response,
+            null
+        ));
         
         log.info("Tag updated successfully with id: {}", updatedTag.getId());
-        return tagMapper.toResponse(updatedTag);
+        return response;
     }
     
     @Override
@@ -89,6 +113,16 @@ public class TagServiceImpl implements TagService {
         }
         
         tagRepository.deleteById(id);
+        
+        // 發布 Tag 刪除事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<TagResponse>(
+            NotificationType.TAG_DELETE,
+            id,
+            null,
+            null,
+            null
+        ));
+        
         log.info("Tag deleted successfully with id: {}", id);
     }
 } 

@@ -37,4 +37,19 @@ public interface SessionRecordService {
      * @param id SessionRecord ID
      */
     void deleteSessionRecord(Long id);
+    
+    /**
+     * 根據任務 ID 查詢相關的會話記錄 ID 列表
+     * 
+     * @param taskId 任務 ID
+     * @return 會話記錄 ID 列表
+     */
+    List<Long> findIdsByTaskId(Long taskId);
+    
+    /**
+     * 根據任務 ID 刪除相關的會話記錄
+     * 
+     * @param taskId 任務 ID
+     */
+    void deleteByTaskId(Long taskId);
 } 

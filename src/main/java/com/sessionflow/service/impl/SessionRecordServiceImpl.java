@@ -7,8 +7,11 @@ import com.sessionflow.mapper.SessionRecordMapper;
 import com.sessionflow.model.SessionRecord;
 import com.sessionflow.repository.SessionRecordRepository;
 import com.sessionflow.service.SessionRecordService;
+import com.sessionflow.event.ResourceChangedEvent;
+import com.sessionflow.common.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,7 @@ public class SessionRecordServiceImpl implements SessionRecordService {
     
     private final SessionRecordRepository sessionRecordRepository;
     private final SessionRecordMapper sessionRecordMapper;
+    private final ApplicationEventPublisher eventPublisher;
     
     @Override
     public List<SessionRecordResponse> getSessionRecords(LocalDate startDate, LocalDate endDate, Long taskId) {
@@ -83,9 +87,20 @@ public class SessionRecordServiceImpl implements SessionRecordService {
         }
         
         SessionRecord savedRecord = sessionRecordRepository.save(sessionRecord);
+        SessionRecordResponse response = sessionRecordMapper.toResponse(savedRecord);
+        
+        // 發布 SessionRecord 更新事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<>(
+            NotificationType.SESSION_RECORD_UPDATE,
+            savedRecord.getId(),
+            null,
+            response,
+            null
+        ));
+        
         log.info("成功更新工作階段紀錄 - ID: {}", savedRecord.getId());
         
-        return sessionRecordMapper.toResponse(savedRecord);
+        return response;
     }
     
     @Override
@@ -98,6 +113,39 @@ public class SessionRecordServiceImpl implements SessionRecordService {
         }
         
         sessionRecordRepository.deleteById(id);
+        
+        // 發布 SessionRecord 刪除事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<SessionRecordResponse>(
+            NotificationType.SESSION_RECORD_DELETE,
+            id,
+            null,
+            null,
+            null
+        ));
+        
         log.info("成功刪除工作階段紀錄 - ID: {}", id);
+    }
+    
+    @Override
+    public List<Long> findIdsByTaskId(Long taskId) {
+        log.debug("Finding session record IDs by task ID: {}", taskId);
+        
+        List<SessionRecord> sessionRecords = sessionRecordRepository.findByTaskId(taskId);
+        List<Long> sessionRecordIds = sessionRecords.stream()
+                .map(SessionRecord::getId)
+                .toList();
+        
+        log.debug("Found {} session records for task ID: {}", sessionRecordIds.size(), taskId);
+        return sessionRecordIds;
+    }
+    
+    @Override
+    @Transactional
+    public void deleteByTaskId(Long taskId) {
+        log.info("Deleting session records by task ID: {}", taskId);
+        
+        sessionRecordRepository.deleteByTaskId(taskId);
+        
+        log.info("Successfully deleted session records for task ID: {}", taskId);
     }
 } 

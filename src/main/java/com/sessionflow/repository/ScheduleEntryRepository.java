@@ -31,6 +31,12 @@ public interface ScheduleEntryRepository extends JpaRepository<ScheduleEntry, Lo
      */
     List<ScheduleEntry> findByStartAtBetweenOrderByStartAtAsc(LocalDateTime startDateTime, LocalDateTime endDateTime);
     
+    /**
+     * 根據任務 ID 查詢所有相關的排程項目
+     */
+    @Query("SELECT se FROM ScheduleEntry se WHERE se.task.id = :taskId")
+    List<ScheduleEntry> findByTaskId(@Param("taskId") Long taskId);
+    
     @Modifying
     @Transactional
     @Query("UPDATE ScheduleEntry se SET se.task = null WHERE se.task.id = :taskId")

@@ -1,5 +1,11 @@
 package com.sessionflow.service.impl;
 
+import java.util.List;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sessionflow.dto.SessionRecordCreateRequest;
 import com.sessionflow.dto.SessionRecordResponse;
 import com.sessionflow.dto.SessionRequest;
@@ -12,12 +18,10 @@ import com.sessionflow.model.SessionRecord;
 import com.sessionflow.repository.SessionRecordRepository;
 import com.sessionflow.repository.SessionRepository;
 import com.sessionflow.service.SessionService;
+import com.sessionflow.event.ResourceChangedEvent;
+import com.sessionflow.common.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +33,7 @@ public class SessionServiceImpl implements SessionService {
     private final SessionRecordRepository sessionRecordRepository;
     private final SessionMapper sessionMapper;
     private final SessionRecordMapper sessionRecordMapper;
+    private final ApplicationEventPublisher eventPublisher;
     
     @Override
     public SessionResponse createSession(SessionRequest request) {
@@ -37,11 +42,20 @@ public class SessionServiceImpl implements SessionService {
         // 轉換為實體並儲存
         Session session = sessionMapper.toEntity(request);
         Session savedSession = sessionRepository.save(session);
+        SessionResponse response = sessionMapper.toResponse(savedSession);
+        
+        // 發布 Session 建立事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<>(
+            NotificationType.SESSION_CREATE,
+            savedSession.getId(),
+            null,
+            response,
+            null
+        ));
         
         log.info("Successfully created session with id: {}", savedSession.getId());
         
-        // 轉換為回應 DTO
-        return sessionMapper.toResponse(savedSession);
+        return response;
     }
     
     @Override
@@ -68,14 +82,55 @@ public class SessionServiceImpl implements SessionService {
         SessionRecord sessionRecord = sessionRecordMapper.createFromSession(
                 session, request.getCompletionNote());
         SessionRecord savedRecord = sessionRecordRepository.save(sessionRecord);
+        SessionRecordResponse recordResponse = sessionRecordMapper.toResponse(savedRecord);
+        
+        // 發布 SessionRecord 建立事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<>(
+            NotificationType.SESSION_RECORD_CREATE,
+            savedRecord.getId(),
+            null,
+            recordResponse,
+            null
+        ));
         
         // 刪除原始 Session
         sessionRepository.delete(session);
         
+        // 發布 Session 刪除事件
+        eventPublisher.publishEvent(new ResourceChangedEvent<SessionResponse>(
+            NotificationType.SESSION_DELETE,
+            sessionId,
+            null,
+            null,
+            null
+        ));
+        
         log.info("Successfully ended session {} and created record {}", 
                 sessionId, savedRecord.getId());
         
-        // 回傳 SessionRecordResponse
-        return sessionRecordMapper.toResponse(savedRecord);
+        return recordResponse;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<Long> findIdsByTaskId(Long taskId) {
+        log.debug("Finding session IDs by task ID: {}", taskId);
+        
+        List<Session> sessions = sessionRepository.findByTaskId(taskId);
+        List<Long> sessionIds = sessions.stream()
+                .map(Session::getId)
+                .toList();
+        
+        log.debug("Found {} sessions for task ID: {}", sessionIds.size(), taskId);
+        return sessionIds;
+    }
+    
+    @Override
+    public void deleteByTaskId(Long taskId) {
+        log.info("Deleting sessions by task ID: {}", taskId);
+        
+        sessionRepository.deleteByTaskId(taskId);
+        
+        log.info("Successfully deleted sessions for task ID: {}", taskId);
     }
 } 

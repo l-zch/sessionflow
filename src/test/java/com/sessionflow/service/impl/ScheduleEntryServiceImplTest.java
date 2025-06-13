@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,6 +37,9 @@ class ScheduleEntryServiceImplTest {
 
     @Mock
     private ScheduleEntryMapper scheduleEntryMapper;
+    
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private ScheduleEntryServiceImpl scheduleEntryService;
@@ -477,5 +481,67 @@ class ScheduleEntryServiceImplTest {
 
         // Then
         verify(scheduleEntryRepository).findByDateRange(startDateTime, endDateTime);
+    }
+
+    @Test
+    @DisplayName("根據任務ID查詢排程ID列表成功")
+    void findIdsByTaskId_Success() {
+        // Given
+        Long taskId = 1L;
+        ScheduleEntry entry1 = new ScheduleEntry();
+        entry1.setId(1L);
+        entry1.setTask(task);
+        
+        ScheduleEntry entry2 = new ScheduleEntry();
+        entry2.setId(2L);
+        entry2.setTask(task);
+        
+        List<ScheduleEntry> scheduleEntries = List.of(entry1, entry2);
+
+        when(scheduleEntryRepository.findByTaskId(taskId)).thenReturn(scheduleEntries);
+
+        // When
+        List<Long> result = scheduleEntryService.findIdsByTaskId(taskId);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(2);
+        assertThat(result).containsExactly(1L, 2L);
+
+        verify(scheduleEntryRepository).findByTaskId(taskId);
+    }
+
+    @Test
+    @DisplayName("根據任務ID查詢排程ID列表 - 無結果")
+    void findIdsByTaskId_EmptyResult() {
+        // Given
+        Long taskId = 999L;
+        List<ScheduleEntry> emptyEntries = List.of();
+
+        when(scheduleEntryRepository.findByTaskId(taskId)).thenReturn(emptyEntries);
+
+        // When
+        List<Long> result = scheduleEntryService.findIdsByTaskId(taskId);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result).isEmpty();
+
+        verify(scheduleEntryRepository).findByTaskId(taskId);
+    }
+
+    @Test
+    @DisplayName("根據任務ID刪除排程成功")
+    void deleteByTaskId_Success() {
+        // Given
+        Long taskId = 1L;
+
+        doNothing().when(scheduleEntryRepository).deleteByTaskId(taskId);
+
+        // When
+        scheduleEntryService.deleteByTaskId(taskId);
+
+        // Then
+        verify(scheduleEntryRepository).deleteByTaskId(taskId);
     }
 }

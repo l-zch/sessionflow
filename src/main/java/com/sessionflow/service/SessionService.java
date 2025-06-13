@@ -27,4 +27,19 @@ public interface SessionService {
      * - 回傳 SessionRecordResponse
      */
     SessionRecordResponse endSession(Long sessionId, SessionRecordCreateRequest request);
+    
+    /**
+     * 根據任務 ID 查詢相關的會話 ID 列表
+     * 
+     * @param taskId 任務 ID
+     * @return 會話 ID 列表
+     */
+    List<Long> findIdsByTaskId(Long taskId);
+    
+    /**
+     * 根據任務 ID 刪除相關的會話
+     * 
+     * @param taskId 任務 ID
+     */
+    void deleteByTaskId(Long taskId);
 } 

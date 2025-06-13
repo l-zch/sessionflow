@@ -42,6 +42,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
 
         <!-- Database -->
         <dependency>
@@ -115,6 +119,7 @@
                                 <include>com/sessionflow/mapper/**</include>
                                 <include>com/sessionflow/repository/**</include>
                                 <include>com/sessionflow/service/**</include>
+                                <include>com/sessionflow/websocket/**</include>
                             </includes>
                             <excludes>
                                 <exclude>javax/sql/**</exclude>
@@ -137,8 +142,10 @@
                         </goals>
                         <configuration>
                             <excludes>
+                                <exclude>com/sessionflow/exception/**</exclude>
                                 <exclude>com/sessionflow/dto/**</exclude>
                                 <exclude>com/sessionflow/model/**</exclude>
+                                <exclude>com/sessionflow/common/**</exclude>
                                 <exclude>com/sessionflow/config/**</exclude>
                                 <exclude>com/sessionflow/SessionFlowApplication.class</exclude>
                                 <exclude>com/sessionflow/exception/ErrorResponse.class</exclude>

@@ -14,9 +14,6 @@ import com.sessionflow.mapper.TaskMapper;
 import com.sessionflow.model.Task;
 import com.sessionflow.model.TaskStatus;
 import com.sessionflow.repository.TaskRepository;
-import com.sessionflow.repository.SessionRepository;
-import com.sessionflow.repository.SessionRecordRepository;
-import com.sessionflow.repository.ScheduleEntryRepository;
 import com.sessionflow.service.TaskService;
 import com.sessionflow.service.SessionService;
 import com.sessionflow.service.SessionRecordService;
@@ -135,22 +132,16 @@ public class TaskServiceImpl implements TaskService {
 
         // 建立 affected 列表
         List<Affected> affected = new ArrayList<>();
-        if (!sessionIds.isEmpty()) {
-            affected.add(new Affected(NotificationType.SESSION_DELETE, sessionIds));
-        }
-        if (!sessionRecordIds.isEmpty()) {
-            affected.add(new Affected(NotificationType.SESSION_RECORD_DELETE, sessionRecordIds));
-        }
-        if (!scheduleEntryIds.isEmpty()) {
-            affected.add(new Affected(NotificationType.SCHEDULE_ENTRY_DELETE, scheduleEntryIds));
-        }
+        affected.add(new Affected(NotificationType.SESSION_DELETE, sessionIds));
+        affected.add(new Affected(NotificationType.SESSION_RECORD_DELETE, sessionRecordIds));
+        affected.add(new Affected(NotificationType.SCHEDULE_ENTRY_DELETE, scheduleEntryIds));
         // 發布任務刪除事件（包含級聯影響）
         eventPublisher.publishEvent(new ResourceChangedEvent<TaskResponse>(
             NotificationType.TASK_DELETE,
             id,
             null,
             null,
-            affected.isEmpty() ? null : affected
+            affected
         ));
         
         log.info("Task and all related entities deleted successfully with id: {}", id);

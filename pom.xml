@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.sessionflow</groupId>
-    <artifactId>sessionflow-backend</artifactId>
+    <artifactId>sessionflow</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>sessionflow-backend</name>
-    <description>SessionFlow Backend Application</description>
+    <name>sessionflow</name>
+    <description>SessionFlow Application</description>
 
     <properties>
         <java.version>17</java.version>

@@ -54,12 +54,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- SQLite Support (Alternative) -->
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-        </dependency>
-
         <!-- Lombok to reduce boilerplate code -->
         <dependency>
             <groupId>org.projectlombok</groupId>

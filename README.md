@@ -109,8 +109,8 @@ curl -X POST http://localhost:8080/api/sessions \
 ```
 
 ### 4. WebSocket 連接範例
-- [WebSocket 文檔](https://github.com/l-zch/sessionflow/resource/ws_doc.md)
-- [WebSocket 連接範例](https://github.com/l-zch/sessionflow/resrouce/ws-example.html)
+- [WebSocket 文檔](https://github.com/l-zch/sessionflow/blob/main/resource/ws-doc.md)
+- [WebSocket 連接範例](https://github.com/l-zch/sessionflow/blob/main/resource/ws-example.html)
 
 #### JavaScript 客戶端
 ```javascript

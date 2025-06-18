@@ -28,11 +28,4 @@ public interface TagMapper {
      * @return TagResponse 列表
      */
     List<TagResponse> toResponseList(List<Tag> tags);
-    
-    /**
-     * 更新 Tag 實體的欄位（從 TagRequest）
-     * @param tag 要更新的 Tag 實體
-     * @param request TagRequest
-     */
-    void updateEntityFromRequest(Tag tag, TagRequest request);
 } 

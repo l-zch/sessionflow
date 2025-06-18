@@ -52,6 +52,7 @@ class SessionMapperImplTest {
         session = new Session("專案開發時間");
         session.setId(1L);
         session.setTask(task);
+        session.setStartTime(LocalDateTime.of(2024, 1, 15, 14, 0));
         session.setEndReminder(LocalDateTime.of(2024, 1, 15, 16, 0));
         session.setNote("專注於核心功能開發");
     }
@@ -137,6 +138,7 @@ class SessionMapperImplTest {
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("專案開發時間");
         assertThat(result.getTaskId()).isEqualTo(1L);
+        assertThat(result.getStartTime()).isEqualTo(LocalDateTime.of(2024, 1, 15, 14, 0));
         assertThat(result.getEndReminder()).isEqualTo(LocalDateTime.of(2024, 1, 15, 16, 0));
         assertThat(result.getNote()).isEqualTo("專注於核心功能開發");
     }
@@ -148,6 +150,8 @@ class SessionMapperImplTest {
         Session sessionWithoutTask = new Session("簡單工作階段");
         sessionWithoutTask.setId(2L);
         sessionWithoutTask.setNote("無任務關聯");
+        // startTime 會在建構時自動設定，這裡手動設定以便測試
+        sessionWithoutTask.setStartTime(LocalDateTime.of(2024, 1, 15, 15, 0));
 
         // When
         SessionResponse result = sessionMapper.toResponse(sessionWithoutTask);
@@ -157,6 +161,7 @@ class SessionMapperImplTest {
         assertThat(result.getId()).isEqualTo(2L);
         assertThat(result.getTitle()).isEqualTo("簡單工作階段");
         assertThat(result.getTaskId()).isNull();
+        assertThat(result.getStartTime()).isEqualTo(LocalDateTime.of(2024, 1, 15, 15, 0));
         assertThat(result.getNote()).isEqualTo("無任務關聯");
         assertThat(result.getEndReminder()).isNull();
     }
@@ -204,121 +209,5 @@ class SessionMapperImplTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result).isEmpty();
-    }
-
-    @Test
-    @DisplayName("Session 列表為 null 時返回 null")
-    void toResponseList_NullSessionList_ReturnsNull() {
-        // When
-        List<SessionResponse> result = sessionMapper.toResponseList(null);
-
-        // Then
-        assertThat(result).isNull();
-    }
-
-    @Test
-    @DisplayName("使用 SessionRequest 更新 Session 實體成功")
-    void updateEntityFromRequest_ValidInputs_Success() {
-        // Given
-        Session existingSession = new Session("舊標題");
-        existingSession.setId(1L);
-        existingSession.setNote("舊備註");
-
-        SessionRequest updateRequest = new SessionRequest();
-        updateRequest.setTitle("新標題");
-        updateRequest.setTaskId(1L);
-        updateRequest.setEndReminder(LocalDateTime.of(2024, 2, 1, 12, 0));
-        updateRequest.setNote("新備註");
-
-        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
-
-        // When
-        sessionMapper.updateEntityFromRequest(existingSession, updateRequest);
-
-        // Then
-        assertThat(existingSession.getTitle()).isEqualTo("新標題");
-        assertThat(existingSession.getTask()).isEqualTo(task);
-        assertThat(existingSession.getEndReminder()).isEqualTo(LocalDateTime.of(2024, 2, 1, 12, 0));
-        assertThat(existingSession.getNote()).isEqualTo("新備註");
-
-        verify(taskRepository).findById(1L);
-    }
-
-    @Test
-    @DisplayName("使用 SessionRequest 更新 Session 實體 - 清空任務關聯")
-    void updateEntityFromRequest_ClearTaskAssociation_Success() {
-        // Given
-        Session existingSession = new Session("工作階段標題");
-        existingSession.setTask(task); // 原本有任務關聯
-
-        SessionRequest updateRequest = new SessionRequest();
-        updateRequest.setTitle("更新標題");
-        updateRequest.setTaskId(null); // 設為 null 表示清空任務關聯
-
-        // When
-        sessionMapper.updateEntityFromRequest(existingSession, updateRequest);
-
-        // Then
-        assertThat(existingSession.getTitle()).isEqualTo("更新標題");
-        assertThat(existingSession.getTask()).isNull();
-
-        verify(taskRepository, never()).findById(any());
-    }
-
-    @Test
-    @DisplayName("使用 SessionRequest 更新 Session 實體 - 任務不存在")
-    void updateEntityFromRequest_TaskNotFound_Success() {
-        // Given
-        Session existingSession = new Session("工作階段標題");
-        existingSession.setTask(task); // 原本有任務關聯
-
-        SessionRequest updateRequest = new SessionRequest();
-        updateRequest.setTitle("更新標題");
-        updateRequest.setTaskId(999L); // 不存在的任務 ID
-
-        when(taskRepository.findById(999L)).thenReturn(Optional.empty());
-
-        // When
-        sessionMapper.updateEntityFromRequest(existingSession, updateRequest);
-
-        // Then
-        assertThat(existingSession.getTitle()).isEqualTo("更新標題");
-        assertThat(existingSession.getTask()).isNull(); // 任務不存在時設為 null
-
-        verify(taskRepository).findById(999L);
-    }
-
-    @Test
-    @DisplayName("Session 為 null 時不執行任何操作")
-    void updateEntityFromRequest_NullSession_NoOperation() {
-        // When
-        sessionMapper.updateEntityFromRequest(null, sessionRequest);
-
-        // Then
-        verify(taskRepository, never()).findById(any());
-    }
-
-    @Test
-    @DisplayName("SessionRequest 為 null 時不執行任何操作")
-    void updateEntityFromRequest_NullRequest_NoOperation() {
-        // Given
-        Session existingSession = new Session("原標題");
-        String originalTitle = existingSession.getTitle();
-
-        // When
-        sessionMapper.updateEntityFromRequest(existingSession, null);
-
-        // Then
-        assertThat(existingSession.getTitle()).isEqualTo(originalTitle);
-        verify(taskRepository, never()).findById(any());
-    }
-
-    @Test
-    @DisplayName("Session 和 SessionRequest 都為 null 時不執行任何操作")
-    void updateEntityFromRequest_BothNull_NoOperation() {
-        // When & Then - 不應該拋出例外
-        sessionMapper.updateEntityFromRequest(null, null);
-
-        verify(taskRepository, never()).findById(any());
     }
 } 

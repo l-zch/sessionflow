@@ -1,5 +1,6 @@
 package com.sessionflow.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -78,9 +79,15 @@ public class SessionServiceImpl implements SessionService {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new SessionNotFoundException(sessionId));
         
-        // 建立 SessionRecord
-        SessionRecord sessionRecord = sessionRecordMapper.createFromSession(
-                session, request.getCompletionNote());
+        // 業務邏輯：直接在此創建 SessionRecord 實體
+        SessionRecord sessionRecord = new SessionRecord();
+        sessionRecord.setTitle(session.getTitle());
+        sessionRecord.setStartAt(session.getStartTime());
+        sessionRecord.setEndAt(LocalDateTime.now()); // 結束時間由業務邏輯定義
+        sessionRecord.setPlannedNote(session.getNote());
+        sessionRecord.setCompletionNote(request.getCompletionNote());
+        sessionRecord.setTask(session.getTask());
+
         SessionRecord savedRecord = sessionRecordRepository.save(sessionRecord);
         SessionRecordResponse recordResponse = sessionRecordMapper.toResponse(savedRecord);
         

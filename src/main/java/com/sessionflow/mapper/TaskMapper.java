@@ -22,9 +22,4 @@ public interface TaskMapper {
      * 將 Task 實體列表轉換為 TaskResponse 列表
      */
     List<TaskResponse> toResponseList(List<Task> tasks);
-    
-    /**
-     * 使用 TaskRequest 更新現有的 Task 實體
-     */
-    void updateEntityFromRequest(Task task, TaskRequest taskRequest);
 } 

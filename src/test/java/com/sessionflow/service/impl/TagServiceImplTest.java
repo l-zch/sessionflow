@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 import java.util.Optional;
@@ -169,8 +170,15 @@ class TagServiceImplTest {
         
         verify(tagRepository).findById(tagId);
         verify(tagRepository).existsByNameAndIdNot("工作（更新）", tagId);
-        verify(tagMapper).updateEntityFromRequest(tag, updateRequest);
-        verify(tagRepository).save(tag);
+        
+        // 驗證傳遞給 save 方法的 Tag 物件
+        ArgumentCaptor<Tag> tagCaptor = ArgumentCaptor.forClass(Tag.class);
+        verify(tagRepository).save(tagCaptor.capture());
+        
+        Tag capturedTag = tagCaptor.getValue();
+        assertThat(capturedTag.getName()).isEqualTo("工作（更新）");
+        assertThat(capturedTag.getColor()).isEqualTo("#FF6B35");
+        
         verify(tagMapper).toResponse(updatedTag);
     }
     
@@ -190,7 +198,6 @@ class TagServiceImplTest {
         
         verify(tagRepository).findById(nonExistentId);
         verify(tagRepository, never()).existsByNameAndIdNot(any(), any());
-        verify(tagMapper, never()).updateEntityFromRequest(any(), any());
         verify(tagRepository, never()).save(any());
         verify(tagMapper, never()).toResponse(any());
     }
@@ -212,7 +219,6 @@ class TagServiceImplTest {
         
         verify(tagRepository).findById(tagId);
         verify(tagRepository).existsByNameAndIdNot("重要", tagId);
-        verify(tagMapper, never()).updateEntityFromRequest(any(), any());
         verify(tagRepository, never()).save(any());
         verify(tagMapper, never()).toResponse(any());
     }
@@ -243,8 +249,15 @@ class TagServiceImplTest {
         
         verify(tagRepository).findById(tagId);
         verify(tagRepository).existsByNameAndIdNot("工作", tagId);
-        verify(tagMapper).updateEntityFromRequest(tag, updateRequest);
-        verify(tagRepository).save(tag);
+        
+        // 驗證傳遞給 save 方法的 Tag 物件
+        ArgumentCaptor<Tag> tagCaptor = ArgumentCaptor.forClass(Tag.class);
+        verify(tagRepository).save(tagCaptor.capture());
+        
+        Tag capturedTag = tagCaptor.getValue();
+        assertThat(capturedTag.getName()).isEqualTo("工作");
+        assertThat(capturedTag.getColor()).isEqualTo("#FF6B35");
+        
         verify(tagMapper).toResponse(updatedTag);
     }
     

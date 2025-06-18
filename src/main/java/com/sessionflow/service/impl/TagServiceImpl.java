@@ -84,8 +84,10 @@ public class TagServiceImpl implements TagService {
             throw new TagNameAlreadyExistsException(request.getName());
         }
         
-        // 更新標籤
-        tagMapper.updateEntityFromRequest(existingTag, request);
+        // 更新標籤實體欄位
+        existingTag.setName(request.getName());
+        existingTag.setColor(request.getColor());
+
         Tag updatedTag = tagRepository.save(existingTag);
         TagResponse response = tagMapper.toResponse(updatedTag);
         

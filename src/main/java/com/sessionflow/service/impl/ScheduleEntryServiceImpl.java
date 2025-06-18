@@ -10,6 +10,8 @@ import com.sessionflow.repository.ScheduleEntryRepository;
 import com.sessionflow.service.ScheduleEntryService;
 import com.sessionflow.event.ResourceChangedEvent;
 import com.sessionflow.common.NotificationType;
+import com.sessionflow.model.Task;
+import com.sessionflow.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,6 +29,7 @@ import java.util.List;
 public class ScheduleEntryServiceImpl implements ScheduleEntryService {
     
     private final ScheduleEntryRepository scheduleEntryRepository;
+    private final TaskRepository taskRepository;
     private final ScheduleEntryMapper scheduleEntryMapper;
     private final ApplicationEventPublisher eventPublisher;
     
@@ -66,7 +69,20 @@ public class ScheduleEntryServiceImpl implements ScheduleEntryService {
         ScheduleEntry scheduleEntry = scheduleEntryRepository.findById(id)
                 .orElseThrow(() -> new ScheduleEntryNotFoundException(id));
         
-        scheduleEntryMapper.updateEntityFromRequest(request, scheduleEntry);
+        // 將更新邏輯移至 Service 層
+        scheduleEntry.setTitle(request.getTitle());
+        scheduleEntry.setEndAt(request.getEndAt());
+        scheduleEntry.setStartAt(request.getStartAt());
+        scheduleEntry.setNote(request.getNote());
+        
+        // 更新關聯的任務
+        if (request.getTaskId() != null) {
+            Task task = taskRepository.findById(request.getTaskId()).orElse(null);
+            scheduleEntry.setTask(task);
+        } else {
+            scheduleEntry.setTask(null);
+        }
+
         ScheduleEntry savedEntry = scheduleEntryRepository.save(scheduleEntry);
         ScheduleEntryResponse response = scheduleEntryMapper.toResponse(savedEntry);
         

@@ -13,6 +13,4 @@ public interface ScheduleEntryMapper {
     ScheduleEntryResponse toResponse(ScheduleEntry scheduleEntry);
     
     List<ScheduleEntryResponse> toResponseList(List<ScheduleEntry> scheduleEntries);
-    
-    void updateEntityFromRequest(ScheduleEntryRequest request, ScheduleEntry scheduleEntry);
 } 

@@ -6,6 +6,7 @@ import com.sessionflow.mapper.TagMapper;
 import com.sessionflow.model.Tag;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -36,21 +37,10 @@ public class TagMapperImpl implements TagMapper {
     @Override
     public List<TagResponse> toResponseList(List<Tag> tags) {
         if (tags == null) {
-            return null;
+            return Collections.emptyList();
         }
-        
         return tags.stream()
-                .map(this::toResponse)
-                .toList();
-    }
-    
-    @Override
-    public void updateEntityFromRequest(Tag tag, TagRequest request) {
-        if (tag == null || request == null) {
-            return;
-        }
-        
-        tag.setName(request.getName());
-        tag.setColor(request.getColor());
+            .map(this::toResponse)
+            .toList();
     }
 } 

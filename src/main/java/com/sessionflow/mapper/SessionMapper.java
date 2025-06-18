@@ -19,12 +19,7 @@ public interface SessionMapper {
     SessionResponse toResponse(Session session);
     
     /**
-     * 將 Session 實體列表轉換為 SessionResponse 列表
+     * 將 Session 列表轉換為 SessionResponse 列表
      */
     List<SessionResponse> toResponseList(List<Session> sessions);
-    
-    /**
-     * 更新 Session 實體的欄位（從 SessionRequest）
-     */
-    void updateEntityFromRequest(Session session, SessionRequest request);
 } 

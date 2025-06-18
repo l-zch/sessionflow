@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,7 @@ public class SessionMapperImpl implements SessionMapper {
         SessionResponse response = new SessionResponse();
         response.setId(session.getId());
         response.setTitle(session.getTitle());
+        response.setStartTime(session.getStartTime());
         response.setEndReminder(session.getEndReminder());
         response.setNote(session.getNote());
         
@@ -68,31 +70,10 @@ public class SessionMapperImpl implements SessionMapper {
     @Override
     public List<SessionResponse> toResponseList(List<Session> sessions) {
         if (sessions == null) {
-            return null;
+            return Collections.emptyList();
         }
-        
         return sessions.stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
-    }
-    
-    @Override
-    public void updateEntityFromRequest(Session session, SessionRequest request) {
-        if (session == null || request == null) {
-            return;
-        }
-        
-        session.setTitle(request.getTitle());
-        session.setEndReminder(request.getEndReminder());
-        session.setNote(request.getNote());
-        
-        // 處理任務關聯更新
-        if (request.getTaskId() != null) {
-            Task task = taskRepository.findById(request.getTaskId())
-                    .orElse(null);
-            session.setTask(task);
-        } else {
-            session.setTask(null);
-        }
+            .map(this::toResponse)
+            .toList();
     }
 } 

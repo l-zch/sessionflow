@@ -211,15 +211,13 @@ class WebSocketIntegrationTest {
         // 建立相關的 Session 和 SessionRecord（直接使用 Repository 建立測試資料）
         Task task = taskRepository.findById(createdTask.getId()).orElseThrow();
         
-        // 建立 Session
-        Session session1 = new Session();
-        session1.setTitle("測試 Session 1");
+        // 建立 Session - 使用有參建構子確保 startTime 正確設定
+        Session session1 = new Session("測試 Session 1");
         session1.setNote("Session 1 備註");
         session1.setTask(task);
         Session savedSession1 = sessionRepository.save(session1);
         
-        Session session2 = new Session();
-        session2.setTitle("測試 Session 2");
+        Session session2 = new Session("測試 Session 2");
         session2.setNote("Session 2 備註");
         session2.setTask(task);
         Session savedSession2 = sessionRepository.save(session2);

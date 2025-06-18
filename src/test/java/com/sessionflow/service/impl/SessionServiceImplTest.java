@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -70,6 +71,7 @@ class SessionServiceImplTest {
         sessionResponse = new SessionResponse();
         sessionResponse.setId(1L);
         sessionResponse.setTitle("專案開發時間");
+        sessionResponse.setStartTime(LocalDateTime.of(2024, 1, 15, 14, 0));
         sessionResponse.setNote("專注於核心功能開發");
         
         recordCreateRequest = new SessionRecordCreateRequest();
@@ -137,11 +139,11 @@ class SessionServiceImplTest {
     void endSession_Success() {
         // Given
         Long sessionId = 1L;
-        
+        // 設定 session 的 startTime
+        session.setStartTime(LocalDateTime.of(2024, 1, 15, 9, 0));
+
         when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
-        when(sessionRecordMapper.createFromSession(session, recordCreateRequest.getCompletionNote()))
-                .thenReturn(sessionRecord);
-        when(sessionRecordRepository.save(sessionRecord)).thenReturn(sessionRecord);
+        when(sessionRecordRepository.save(any(SessionRecord.class))).thenReturn(sessionRecord);
         when(sessionRecordMapper.toResponse(sessionRecord)).thenReturn(recordResponse);
         doNothing().when(sessionRepository).delete(session);
         
@@ -151,13 +153,21 @@ class SessionServiceImplTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getTitle()).isEqualTo("專案開發時間");
-        assertThat(result.getPlannedNote()).isEqualTo("專注於核心功能開發");
-        assertThat(result.getCompletionNote()).isEqualTo("完成了主要功能的 80%");
+
+        // 驗證傳遞給 save 方法的 SessionRecord 物件
+        ArgumentCaptor<SessionRecord> captor = ArgumentCaptor.forClass(SessionRecord.class);
+        verify(sessionRecordRepository).save(captor.capture());
         
+        SessionRecord capturedRecord = captor.getValue();
+        assertThat(capturedRecord.getTitle()).isEqualTo(session.getTitle());
+        assertThat(capturedRecord.getPlannedNote()).isEqualTo(session.getNote());
+        assertThat(capturedRecord.getCompletionNote()).isEqualTo(recordCreateRequest.getCompletionNote());
+        assertThat(capturedRecord.getStartAt()).isEqualTo(session.getStartTime());
+        assertThat(capturedRecord.getTask()).isEqualTo(session.getTask());
+        assertThat(capturedRecord.getEndAt()).isBeforeOrEqualTo(LocalDateTime.now());
+
+        // 驗證其他互動
         verify(sessionRepository).findById(sessionId);
-        verify(sessionRecordMapper).createFromSession(session, recordCreateRequest.getCompletionNote());
-        verify(sessionRecordRepository).save(sessionRecord);
         verify(sessionRepository).delete(session);
         verify(sessionRecordMapper).toResponse(sessionRecord);
     }
@@ -176,7 +186,6 @@ class SessionServiceImplTest {
                 .hasMessage("Session with id 999 not found");
         
         verify(sessionRepository).findById(nonExistentId);
-        verify(sessionRecordMapper, never()).createFromSession(any(), any());
         verify(sessionRecordRepository, never()).save(any());
         verify(sessionRepository, never()).delete(any());
     }

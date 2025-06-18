@@ -51,11 +51,18 @@ public class SessionRecord {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
     
-    // Custom constructor
+    // Custom constructors
     public SessionRecord(String title, LocalDateTime startAt, LocalDateTime endAt) {
         this.title = title;
         this.startAt = startAt;
         this.endAt = endAt;
+    }
+    
+    // Business logic constructor - automatically sets endAt to current time
+    public SessionRecord(String title, LocalDateTime startAt) {
+        this.title = title;
+        this.startAt = startAt;
+        this.endAt = LocalDateTime.now(); // Business logic: record ends at current time
     }
     
     // Lifecycle methods

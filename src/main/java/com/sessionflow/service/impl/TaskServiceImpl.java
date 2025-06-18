@@ -2,6 +2,8 @@ package com.sessionflow.service.impl;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ import com.sessionflow.service.ScheduleEntryService;
 import com.sessionflow.event.ResourceChangedEvent;
 import com.sessionflow.common.NotificationType;
 import com.sessionflow.dto.ResourceChangedNotification.Affected;
+import com.sessionflow.model.Tag;
+import com.sessionflow.repository.TagRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final TagRepository tagRepository;
     private final TaskMapper taskMapper;
     private final ApplicationEventPublisher eventPublisher;
     private final SessionService sessionService;
@@ -84,7 +89,20 @@ public class TaskServiceImpl implements TaskService {
         Task existingTask = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
 
-        taskMapper.updateEntityFromRequest(existingTask, taskRequest);
+        // 將更新邏輯移至 Service 層
+        existingTask.setTitle(taskRequest.getTitle());
+        existingTask.setDueTime(taskRequest.getDueTime());
+        existingTask.setNote(taskRequest.getNote());
+
+        // 更新標籤關聯
+        if (taskRequest.getTagIds() != null) {
+            Set<Tag> tags = new HashSet<>();
+            if (!taskRequest.getTagIds().isEmpty()) {
+                tagRepository.findAllById(taskRequest.getTagIds()).forEach(tags::add);
+            }
+            existingTask.setTags(tags);
+        }
+
         Task updatedTask = taskRepository.save(existingTask);
         TaskResponse response = taskMapper.toResponse(updatedTask);
 

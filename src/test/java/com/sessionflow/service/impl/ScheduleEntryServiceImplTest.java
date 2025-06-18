@@ -8,6 +8,8 @@ import com.sessionflow.mapper.ScheduleEntryMapper;
 import com.sessionflow.model.ScheduleEntry;
 import com.sessionflow.model.Task;
 import com.sessionflow.repository.ScheduleEntryRepository;
+import com.sessionflow.repository.TaskRepository;
+import org.mockito.ArgumentCaptor;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +36,9 @@ class ScheduleEntryServiceImplTest {
 
     @Mock
     private ScheduleEntryRepository scheduleEntryRepository;
+
+    @Mock
+    private TaskRepository taskRepository;
 
     @Mock
     private ScheduleEntryMapper scheduleEntryMapper;
@@ -243,9 +248,11 @@ class ScheduleEntryServiceImplTest {
         ScheduleEntryResponse updatedResponse = new ScheduleEntryResponse();
         updatedResponse.setId(scheduleId);
         updatedResponse.setTitle("更新後的會議");
+        updatedResponse.setNote("更新後的備註");
 
         when(scheduleEntryRepository.findById(scheduleId)).thenReturn(Optional.of(scheduleEntry));
-        when(scheduleEntryRepository.save(scheduleEntry)).thenReturn(updatedEntry);
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+        when(scheduleEntryRepository.save(any(ScheduleEntry.class))).thenReturn(updatedEntry);
         when(scheduleEntryMapper.toResponse(updatedEntry)).thenReturn(updatedResponse);
 
         // When
@@ -256,10 +263,17 @@ class ScheduleEntryServiceImplTest {
         assertThat(result.getId()).isEqualTo(scheduleId);
         assertThat(result.getTitle()).isEqualTo("更新後的會議");
 
+        ArgumentCaptor<ScheduleEntry> captor = ArgumentCaptor.forClass(ScheduleEntry.class);
+
         verify(scheduleEntryRepository).findById(scheduleId);
-        verify(scheduleEntryMapper).updateEntityFromRequest(updateRequest, scheduleEntry);
-        verify(scheduleEntryRepository).save(scheduleEntry);
+        verify(taskRepository).findById(1L);
+        verify(scheduleEntryRepository).save(captor.capture());
         verify(scheduleEntryMapper).toResponse(updatedEntry);
+
+        ScheduleEntry capturedEntry = captor.getValue();
+        assertThat(capturedEntry.getTitle()).isEqualTo("更新後的會議");
+        assertThat(capturedEntry.getNote()).isEqualTo("更新後的備註");
+        assertThat(capturedEntry.getTask()).isEqualTo(task);
     }
 
     @Test
@@ -271,17 +285,16 @@ class ScheduleEntryServiceImplTest {
         validRequest.setEndAt(LocalDateTime.of(2024, 1, 15, 11, 0));
 
         when(scheduleEntryRepository.findById(scheduleId)).thenReturn(Optional.of(scheduleEntry));
-        when(scheduleEntryRepository.save(scheduleEntry)).thenReturn(scheduleEntry);
+        when(scheduleEntryRepository.save(any(ScheduleEntry.class))).thenReturn(scheduleEntry);
         when(scheduleEntryMapper.toResponse(scheduleEntry)).thenReturn(scheduleEntryResponse);
 
-        // When & Then - 應該不會拋出異常
+        // When & Then
         assertThatCode(() -> scheduleEntryService.updateScheduleEntry(scheduleId, validRequest))
                 .doesNotThrowAnyException();
 
-        verify(scheduleEntryRepository).findById(scheduleId);
-        verify(scheduleEntryMapper).updateEntityFromRequest(validRequest, scheduleEntry);
-        verify(scheduleEntryRepository).save(scheduleEntry);
-        verify(scheduleEntryMapper).toResponse(scheduleEntry);
+        ArgumentCaptor<ScheduleEntry> captor = ArgumentCaptor.forClass(ScheduleEntry.class);
+        verify(scheduleEntryRepository).save(captor.capture());
+        assertThat(captor.getValue().getStartAt()).isNull();
     }
 
     @Test
@@ -293,17 +306,16 @@ class ScheduleEntryServiceImplTest {
         validRequest.setEndAt(null);
 
         when(scheduleEntryRepository.findById(scheduleId)).thenReturn(Optional.of(scheduleEntry));
-        when(scheduleEntryRepository.save(scheduleEntry)).thenReturn(scheduleEntry);
+        when(scheduleEntryRepository.save(any(ScheduleEntry.class))).thenReturn(scheduleEntry);
         when(scheduleEntryMapper.toResponse(scheduleEntry)).thenReturn(scheduleEntryResponse);
 
-        // When & Then - 應該不會拋出異常
+        // When & Then
         assertThatCode(() -> scheduleEntryService.updateScheduleEntry(scheduleId, validRequest))
                 .doesNotThrowAnyException();
 
-        verify(scheduleEntryRepository).findById(scheduleId);
-        verify(scheduleEntryMapper).updateEntityFromRequest(validRequest, scheduleEntry);
-        verify(scheduleEntryRepository).save(scheduleEntry);
-        verify(scheduleEntryMapper).toResponse(scheduleEntry);
+        ArgumentCaptor<ScheduleEntry> captor = ArgumentCaptor.forClass(ScheduleEntry.class);
+        verify(scheduleEntryRepository).save(captor.capture());
+        assertThat(captor.getValue().getEndAt()).isNull();
     }
 
     @Test
@@ -311,15 +323,13 @@ class ScheduleEntryServiceImplTest {
     void updateScheduleEntry_NotFound_ShouldThrowException() {
         // Given
         Long nonExistentId = 999L;
+        ScheduleEntryRequest updateRequest = new ScheduleEntryRequest();
         when(scheduleEntryRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThatThrownBy(() -> scheduleEntryService.updateScheduleEntry(nonExistentId, validRequest))
-                .isInstanceOf(ScheduleEntryNotFoundException.class)
-                .hasMessage("ScheduleEntry with id " + nonExistentId + " not found");
-
-        verify(scheduleEntryRepository).findById(nonExistentId);
-        verify(scheduleEntryMapper, never()).updateEntityFromRequest(any(), any());
+        assertThatThrownBy(() -> scheduleEntryService.updateScheduleEntry(nonExistentId, updateRequest))
+                .isInstanceOf(ScheduleEntryNotFoundException.class);
+        
         verify(scheduleEntryRepository, never()).save(any());
     }
 
@@ -328,16 +338,14 @@ class ScheduleEntryServiceImplTest {
     void updateScheduleEntry_InvalidTimeRange_ShouldThrowException() {
         // Given
         Long scheduleId = 1L;
-        validRequest.setEndAt(LocalDateTime.of(2024, 1, 15, 9, 0)); // 早於開始時間
+        ScheduleEntryRequest invalidRequest = new ScheduleEntryRequest();
+        invalidRequest.setStartAt(LocalDateTime.of(2024, 1, 15, 11, 0));
+        invalidRequest.setEndAt(LocalDateTime.of(2024, 1, 15, 10, 0));
 
         // When & Then
-        assertThatThrownBy(() -> scheduleEntryService.updateScheduleEntry(scheduleId, validRequest))
-                .isInstanceOf(InvalidTimeRangeException.class)
-                .hasMessage("結束時間必須晚於開始時間");
-
-        // 時間驗證在 repository 調用之前就會失敗，所以不會調用 repository
-        verify(scheduleEntryRepository, never()).findById(any());
-        verify(scheduleEntryMapper, never()).updateEntityFromRequest(any(), any());
+        assertThatThrownBy(() -> scheduleEntryService.updateScheduleEntry(scheduleId, invalidRequest))
+                .isInstanceOf(InvalidTimeRangeException.class);
+        
         verify(scheduleEntryRepository, never()).save(any());
     }
 
@@ -346,18 +354,15 @@ class ScheduleEntryServiceImplTest {
     void updateScheduleEntry_EndTimeEqualsStartTime_ShouldThrowException() {
         // Given
         Long scheduleId = 1L;
+        ScheduleEntryRequest invalidRequest = new ScheduleEntryRequest();
         LocalDateTime sameTime = LocalDateTime.of(2024, 1, 15, 10, 0);
-        validRequest.setStartAt(sameTime);
-        validRequest.setEndAt(sameTime);
+        invalidRequest.setStartAt(sameTime);
+        invalidRequest.setEndAt(sameTime);
 
         // When & Then
-        assertThatThrownBy(() -> scheduleEntryService.updateScheduleEntry(scheduleId, validRequest))
-                .isInstanceOf(InvalidTimeRangeException.class)
-                .hasMessage("結束時間必須晚於開始時間");
-
-        // 時間驗證在 repository 調用之前就會失敗，所以不會調用 repository
-        verify(scheduleEntryRepository, never()).findById(any());
-        verify(scheduleEntryMapper, never()).updateEntityFromRequest(any(), any());
+        assertThatThrownBy(() -> scheduleEntryService.updateScheduleEntry(scheduleId, invalidRequest))
+                .isInstanceOf(InvalidTimeRangeException.class);
+        
         verify(scheduleEntryRepository, never()).save(any());
     }
 

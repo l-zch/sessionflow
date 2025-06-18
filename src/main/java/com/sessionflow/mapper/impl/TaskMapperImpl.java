@@ -80,26 +80,4 @@ public class TaskMapperImpl implements TaskMapper {
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
-    
-    @Override
-    public void updateEntityFromRequest(Task task, TaskRequest taskRequest) {
-        if (task == null || taskRequest == null) {
-            return;
-        }
-        
-        task.setTitle(taskRequest.getTitle());
-        task.setDueTime(taskRequest.getDueTime());
-        task.setNote(taskRequest.getNote());
-        
-        // 更新標籤關聯
-        if (taskRequest.getTagIds() != null) {
-            Set<Tag> tags = new HashSet<>();
-            for (Long tagId : taskRequest.getTagIds()) {
-                tagRepository.findById(tagId).ifPresent(tags::add);
-            }
-            task.setTags(tags);
-        } else {
-            task.getTags().clear();
-        }
-    }
 } 

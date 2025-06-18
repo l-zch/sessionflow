@@ -72,25 +72,4 @@ public class ScheduleEntryMapperImpl implements ScheduleEntryMapper {
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
-    
-    @Override
-    public void updateEntityFromRequest(ScheduleEntryRequest request, ScheduleEntry scheduleEntry) {
-        if (request == null || scheduleEntry == null) {
-            return;
-        }
-        
-        scheduleEntry.setTitle(request.getTitle());
-        // 先設定結束時間，再設定開始時間，避免時間驗證問題
-        scheduleEntry.setEndAt(request.getEndAt());
-        scheduleEntry.setStartAt(request.getStartAt());
-        scheduleEntry.setNote(request.getNote());
-        
-        // 更新關聯的任務
-        if (request.getTaskId() != null) {
-            Task task = taskRepository.findById(request.getTaskId()).orElse(null);
-            scheduleEntry.setTask(task);
-        } else {
-            scheduleEntry.setTask(null);
-        }
-    }
 } 

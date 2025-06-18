@@ -13,6 +13,7 @@ import com.sessionflow.repository.ScheduleEntryRepository;
 import com.sessionflow.service.SessionService;
 import com.sessionflow.service.SessionRecordService;
 import com.sessionflow.service.ScheduleEntryService;
+import com.sessionflow.repository.TagRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +39,9 @@ class TaskServiceImplTest {
     
     @Mock
     private TaskRepository taskRepository;
+    
+    @Mock
+    private com.sessionflow.repository.TagRepository tagRepository;
     
     @Mock
     private TaskMapper taskMapper;
@@ -159,12 +164,16 @@ class TaskServiceImplTest {
         // Given
         Long taskId = 1L;
         TaskRequest updateRequest = new TaskRequest("更新後的任務");
+        updateRequest.setNote("更新後的備註");
+        
         Task updatedTask = new Task("更新後的任務");
         updatedTask.setId(taskId);
+        updatedTask.setNote("更新後的備註");
+
         TaskResponse updatedResponse = new TaskResponse(taskId, "更新後的任務", "PENDING");
         
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
-        when(taskRepository.save(task)).thenReturn(updatedTask);
+        when(taskRepository.save(any(Task.class))).thenReturn(updatedTask);
         when(taskMapper.toResponse(updatedTask)).thenReturn(updatedResponse);
         
         // When
@@ -175,10 +184,15 @@ class TaskServiceImplTest {
         assertThat(result.getId()).isEqualTo(taskId);
         assertThat(result.getTitle()).isEqualTo("更新後的任務");
         
+        ArgumentCaptor<Task> taskCaptor = ArgumentCaptor.forClass(Task.class);
+        
         verify(taskRepository).findById(taskId);
-        verify(taskMapper).updateEntityFromRequest(task, updateRequest);
-        verify(taskRepository).save(task);
+        verify(taskRepository).save(taskCaptor.capture());
         verify(taskMapper).toResponse(updatedTask);
+        
+        Task capturedTask = taskCaptor.getValue();
+        assertThat(capturedTask.getTitle()).isEqualTo("更新後的任務");
+        assertThat(capturedTask.getNote()).isEqualTo("更新後的備註");
     }
     
     @Test
@@ -196,7 +210,6 @@ class TaskServiceImplTest {
                 .hasMessage("Task with id 999 not found");
         
         verify(taskRepository).findById(nonExistentId);
-        verify(taskMapper, never()).updateEntityFromRequest(any(), any());
         verify(taskRepository, never()).save(any());
     }
     

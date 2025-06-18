@@ -38,6 +38,7 @@ class SessionRecordMapperImplTest {
         session.setId(1L);
         session.setTask(task);
         session.setNote("專注於核心功能開發");
+        session.setStartTime(LocalDateTime.of(2024, 1, 15, 9, 0)); // 明確設定 startTime
 
         // 建立測試用的 SessionRecord
         sessionRecord = new SessionRecord(
@@ -49,88 +50,6 @@ class SessionRecordMapperImplTest {
         sessionRecord.setTask(task);
         sessionRecord.setPlannedNote("專注於核心功能開發");
         sessionRecord.setCompletionNote("成功完成核心功能");
-    }
-
-    @Test
-    @DisplayName("從 Session 建立 SessionRecord 成功")
-    void createFromSession_ValidSession_Success() {
-        // Given
-        String completionNote = "成功完成工作階段";
-
-        // When
-        SessionRecord result = sessionRecordMapper.createFromSession(session, completionNote);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getTitle()).isEqualTo("專案開發時間");
-        assertThat(result.getTask()).isEqualTo(task);
-        assertThat(result.getPlannedNote()).isEqualTo("專注於核心功能開發");
-        assertThat(result.getCompletionNote()).isEqualTo("成功完成工作階段");
-        assertThat(result.getStartAt()).isNotNull();
-        assertThat(result.getEndAt()).isNotNull();
-        assertThat(result.getStartAt()).isEqualTo(result.getEndAt()); // 建立時開始和結束時間相同
-    }
-
-    @Test
-    @DisplayName("從 Session 建立 SessionRecord - 無任務關聯")
-    void createFromSession_SessionWithoutTask_Success() {
-        // Given
-        Session sessionWithoutTask = new Session("簡單工作階段");
-        sessionWithoutTask.setNote("無任務關聯的工作");
-        String completionNote = "完成簡單工作";
-
-        // When
-        SessionRecord result = sessionRecordMapper.createFromSession(sessionWithoutTask, completionNote);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getTitle()).isEqualTo("簡單工作階段");
-        assertThat(result.getTask()).isNull();
-        assertThat(result.getPlannedNote()).isEqualTo("無任務關聯的工作");
-        assertThat(result.getCompletionNote()).isEqualTo("完成簡單工作");
-    }
-
-    @Test
-    @DisplayName("從 Session 建立 SessionRecord - 無計畫備註")
-    void createFromSession_SessionWithoutNote_Success() {
-        // Given
-        Session sessionWithoutNote = new Session("無備註工作階段");
-        sessionWithoutNote.setTask(task);
-        String completionNote = "完成工作";
-
-        // When
-        SessionRecord result = sessionRecordMapper.createFromSession(sessionWithoutNote, completionNote);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getTitle()).isEqualTo("無備註工作階段");
-        assertThat(result.getTask()).isEqualTo(task);
-        assertThat(result.getPlannedNote()).isNull();
-        assertThat(result.getCompletionNote()).isEqualTo("完成工作");
-    }
-
-    @Test
-    @DisplayName("從 Session 建立 SessionRecord - 無完成備註")
-    void createFromSession_NoCompletionNote_Success() {
-        // When
-        SessionRecord result = sessionRecordMapper.createFromSession(session, null);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getTitle()).isEqualTo("專案開發時間");
-        assertThat(result.getTask()).isEqualTo(task);
-        assertThat(result.getPlannedNote()).isEqualTo("專注於核心功能開發");
-        assertThat(result.getCompletionNote()).isNull();
-    }
-
-    @Test
-    @DisplayName("Session 為 null 時返回 null")
-    void createFromSession_NullSession_ReturnsNull() {
-        // When
-        SessionRecord result = sessionRecordMapper.createFromSession(null, "完成備註");
-
-        // Then
-        assertThat(result).isNull();
     }
 
     @Test
@@ -233,25 +152,5 @@ class SessionRecordMapperImplTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result).isEmpty();
-    }
-
-    @Test
-    @DisplayName("時間戳記驗證 - createFromSession 設定當前時間")
-    void createFromSession_TimestampValidation_Success() {
-        // Given
-        LocalDateTime beforeCreation = LocalDateTime.now().minusSeconds(1);
-        String completionNote = "測試時間戳記";
-
-        // When
-        SessionRecord result = sessionRecordMapper.createFromSession(session, completionNote);
-
-        // Then
-        LocalDateTime afterCreation = LocalDateTime.now().plusSeconds(1);
-        
-        assertThat(result.getStartAt()).isAfter(beforeCreation);
-        assertThat(result.getStartAt()).isBefore(afterCreation);
-        assertThat(result.getEndAt()).isAfter(beforeCreation);
-        assertThat(result.getEndAt()).isBefore(afterCreation);
-        assertThat(result.getStartAt()).isEqualTo(result.getEndAt());
     }
 } 

@@ -6,13 +6,17 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tags")
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = "tasks")
 public class Tag {
     
     @Id
@@ -33,6 +37,9 @@ public class Tag {
     
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    private Set<Task> tasks = new HashSet<>();
     
     // Custom constructor
     public Tag(String name, String color) {

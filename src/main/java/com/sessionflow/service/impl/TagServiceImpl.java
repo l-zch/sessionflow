@@ -106,13 +106,20 @@ public class TagServiceImpl implements TagService {
     public void deleteTag(Long id) {
         log.info("Deleting tag with id: {}", id);
         
-        // 檢查標籤是否存在
-        if (!tagRepository.existsById(id)) {
-            log.warn("Tag not found with id: {}", id);
-            throw new TagNotFoundException(id);
+        // 查詢標籤，如果不存在則拋出異常
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Tag not found with id: {}", id);
+                    return new TagNotFoundException(id);
+                });
+        
+        // 在刪除標籤之前，斷開與所有任務的關聯
+        for (var task : tag.getTasks()) {
+            task.getTags().remove(tag);
         }
         
-        tagRepository.deleteById(id);
+        // 現在可以安全刪除標籤
+        tagRepository.delete(tag);
         
         // 發布 Tag 刪除事件
         eventPublisher.publishEvent(new ResourceChangedEvent<TagResponse>(

@@ -7,6 +7,8 @@ import com.sessionflow.exception.TagNotFoundException;
 import com.sessionflow.mapper.TagMapper;
 import com.sessionflow.model.Tag;
 import com.sessionflow.repository.TagRepository;
+import com.sessionflow.model.Task;
+import com.sessionflow.event.ResourceChangedEvent;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -251,17 +253,45 @@ class TagServiceImplTest {
     void deleteTag_Success() {
         // Given
         Long tagId = 1L;
-        
-        when(tagRepository.existsById(tagId)).thenReturn(true);
-        doNothing().when(tagRepository).deleteById(tagId);
+        when(tagRepository.findById(tagId)).thenReturn(Optional.of(tag));
         
         // When
-        assertThatCode(() -> tagService.deleteTag(tagId))
-                .doesNotThrowAnyException();
+        assertThatCode(() -> tagService.deleteTag(tagId)).doesNotThrowAnyException();
         
         // Then
-        verify(tagRepository).existsById(tagId);
-        verify(tagRepository).deleteById(tagId);
+        verify(tagRepository).findById(tagId);
+        verify(tagRepository).delete(tag);
+        verify(eventPublisher).publishEvent(any(ResourceChangedEvent.class));
+    }
+    
+    @Test
+    @DisplayName("刪除標籤時，若標籤已關聯至任務，應先解除關聯再刪除")
+    void deleteTag_WhenAssociatedWithTask_ShouldRemoveAssociationAndSucceed() {
+        // Given
+        Long tagId = 1L;
+        
+        // 建立一個任務並與標籤關聯
+        Task task = new Task("Test Task");
+        task.setId(101L);
+        
+        // 建立雙向關聯
+        tag.getTasks().add(task);
+        task.getTags().add(tag);
+        
+        when(tagRepository.findById(tagId)).thenReturn(Optional.of(tag));
+        
+        // When
+        tagService.deleteTag(tagId);
+        
+        // Then
+        // 驗證標籤已從任務中移除
+        assertThat(task.getTags()).doesNotContain(tag);
+        
+        // 驗證 repository 的 delete 方法被呼叫
+        verify(tagRepository).delete(tag);
+        
+        // 驗證事件已發布
+        verify(eventPublisher).publishEvent(any(ResourceChangedEvent.class));
     }
     
     @Test
@@ -269,16 +299,16 @@ class TagServiceImplTest {
     void deleteTag_TagNotFound_ThrowsException() {
         // Given
         Long nonExistentId = 999L;
-        
-        when(tagRepository.existsById(nonExistentId)).thenReturn(false);
-        
+        when(tagRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
         // When & Then
         assertThatThrownBy(() -> tagService.deleteTag(nonExistentId))
                 .isInstanceOf(TagNotFoundException.class)
                 .hasMessage("Tag with id 999 not found");
-        
-        verify(tagRepository).existsById(nonExistentId);
-        verify(tagRepository, never()).deleteById(any());
+
+        verify(tagRepository).findById(nonExistentId);
+        verify(tagRepository, never()).delete(any());
+        verify(eventPublisher, never()).publishEvent(any());
     }
     
     @Test

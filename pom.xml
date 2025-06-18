@@ -110,7 +110,7 @@
                             <includes>
                                 <include>com/sessionflow/controller/**</include>
                                 <include>com/sessionflow/exception/**</include>
-                                <include>com/sessionflow/mapper/**</include>
+                                <include>com/sessionflow/model/**</include>
                                 <include>com/sessionflow/repository/**</include>
                                 <include>com/sessionflow/service/**</include>
                                 <include>com/sessionflow/websocket/**</include>
@@ -123,7 +123,6 @@
                                 <exclude>**/*$HibernateInstantiator*</exclude>
                                 <exclude>**/*$MockitoMock*</exclude>
                                 <exclude>com/sessionflow/dto/**</exclude>
-                                <exclude>com/sessionflow/model/**</exclude>
                                 <exclude>com/sessionflow/config/**</exclude>
                             </excludes>
                         </configuration>

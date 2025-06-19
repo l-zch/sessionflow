@@ -2,11 +2,55 @@ package com.sessionflow;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.context.ApplicationListener;
 
-@SpringBootApplication
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.net.ServerSocket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.JvmMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.LogbackMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.startup.StartupTimeMetricsListenerAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
+
+@SpringBootApplication(
+	exclude = {
+		MetricsAutoConfiguration.class,
+		CompositeMeterRegistryAutoConfiguration.class,
+		SimpleMetricsExportAutoConfiguration.class,
+		DataSourcePoolMetricsAutoConfiguration.class,
+		JvmMetricsAutoConfiguration.class,
+		LogbackMetricsAutoConfiguration.class,
+		SystemMetricsAutoConfiguration.class,
+		TomcatMetricsAutoConfiguration.class,
+		StartupTimeMetricsListenerAutoConfiguration.class,
+		InfoEndpointAutoConfiguration.class,
+		HealthEndpointAutoConfiguration.class,
+		JmxAutoConfiguration.class,
+		MailSenderAutoConfiguration.class,
+		SecurityAutoConfiguration.class
+	}
+)
 public class SessionFlowApplication {
 
-    public static void main(String[] args) {
+	private static final Path PID_FILE = Paths.get(".sessionflow.run");
+
+	public static void main(String[] args) {
 		// This check is now handled by the run.sh script for better control
 		// checkIfAlreadyRunning(); 
 
@@ -91,5 +135,5 @@ public class SessionFlowApplication {
 		} catch (IOException e) {
 			return false;
 		}
-    }
+	}
 } 

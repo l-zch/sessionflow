@@ -11,6 +11,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -133,6 +134,13 @@ public class GlobalExceptionHandler {
         
         ErrorResponse errorResponse = ErrorDefinition.MISSING_PARAMETER.createResponse(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+    
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException ex) {
+        log.warn("Resource not found: {}", ex.getMessage());
+        ErrorResponse errorResponse = ErrorDefinition.RESOURCE_NOT_FOUND.createResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
     
     @ExceptionHandler(Exception.class)

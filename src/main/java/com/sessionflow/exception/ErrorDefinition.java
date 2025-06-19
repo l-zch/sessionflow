@@ -16,6 +16,7 @@ public enum ErrorDefinition {
     SESSION_NOT_FOUND("SESSION_NOT_FOUND", "工作階段不存在"),
     SESSION_RECORD_NOT_FOUND("SESSION_RECORD_NOT_FOUND", "工作階段紀錄不存在"),
     SCHEDULE_ENTRY_NOT_FOUND("SCHEDULE_ENTRY_NOT_FOUND", "排程不存在"),
+    RESOURCE_NOT_FOUND("RESOURCE_NOT_FOUND", "請求的資源不存在"),
     
     // 衝突錯誤
     TAG_NAME_CONFLICT("TAG_NAME_CONFLICT", "標籤名稱重複"),
@@ -96,6 +97,7 @@ public enum ErrorDefinition {
             case MISSING_PARAMETER -> "Required parameter 'title' is missing";
             case UNSUPPORTED_MEDIA_TYPE -> "Content type 'text/plain' not supported";
             case INTERNAL_SERVER_ERROR -> "An unexpected error occurred";
+            case RESOURCE_NOT_FOUND -> "The requested resource at /non-existent/path could not be found";
         };
     }
     

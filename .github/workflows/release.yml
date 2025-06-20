@@ -43,26 +43,12 @@ jobs:
         run: |
           JAR_PATH=$(find target -name "sessionflow-*.jar" -print -quit)
           echo "JAR_PATH=$JAR_PATH" >> $GITHUB_ENV
-          echo "JAR_NAME=$(basename "$JAR_PATH")" >> $GITHUB_ENV
           
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Create Release and Upload Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref_name }}
-          body_file: release_notes.md
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.JAR_PATH }}
-          asset_name: ${{ env.JAR_NAME }}
-          asset_content_type: application/java-archive 
+        run: |
+          gh release create ${{ github.ref_name }} \
+            --title "Release ${{ github.ref_name }}" \
+            --notes-file release_notes.md \
+            "${{ env.JAR_PATH }}" 

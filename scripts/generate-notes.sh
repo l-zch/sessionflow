@@ -32,4 +32,4 @@ This is an automated release.
 
 This build incorporates frontend assets from the **[$FRONTEND_VERSION]($FRONTEND_RELEASE_URL)** release.
 The attached JAR file contains the built application with the updated frontend assets.
-EOF 
+EOF

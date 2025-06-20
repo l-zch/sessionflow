@@ -25,10 +25,16 @@ jobs:
       - name: Install dependencies for update script
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Update frontend assets
+      - name: Update frontend assets and capture version
+        id: update_frontend
         run: |
-          chmod +x ./update-frontend.sh
-          ./update-frontend.sh
+          chmod +x ./scripts/update-frontend.sh
+          ./scripts/update-frontend.sh --ci >> $GITHUB_ENV
+
+      - name: Generate release notes
+        run: |
+          chmod +x ./scripts/generate-notes.sh
+          ./scripts/generate-notes.sh > release_notes.md
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
@@ -46,10 +52,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Automated release for ${{ github.ref }}.
-            The attached JAR file contains the built application with the latest frontend assets.
+          release_name: Release ${{ github.ref_name }}
+          body_file: release_notes.md
           draft: false
           prerelease: false
 

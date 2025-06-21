@@ -102,6 +102,8 @@ public class StartupManager {
         } else if (cliArgs.containsKey("verbose")) {
             System.setProperty("logging.level.root", "INFO");
             System.setProperty("spring.jpa.show-sql", "true");
+        } else {
+            System.setProperty("logging.level.root", "WARN");
         }
     }
 

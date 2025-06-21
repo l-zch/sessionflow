@@ -41,7 +41,13 @@ jobs:
 
       - name: Get artifact path and name
         run: |
-          JAR_PATH=$(find target -name "sessionflow-*.jar" -print -quit)
+          ls -R target
+          JAR_PATH=$(find target -name "sessionflow.jar" -print -quit)
+          if [ -z "$JAR_PATH" ]; then
+            echo "::error::JAR file not found in target directory after build."
+            exit 1
+          fi
+          echo "Found JAR at: $JAR_PATH"
           echo "JAR_PATH=$JAR_PATH" >> $GITHUB_ENV
           
       - name: Create Release and Upload Asset

@@ -79,7 +79,7 @@
         function connect() {
             setButtonsState(false); // 在嘗試連接時禁用按鈕
             updateStatus('嘗試連接...');
-            const socket = new SockJS('http://localhost:8080/ws');
+            const socket = new SockJS('http://localhost:53551/ws');
             stompClient = Stomp.over(socket);
 
             // 禁用 STOMP 預設的 console log，保持我們的 log 清潔

@@ -3,7 +3,7 @@
 ## 連接設定
 
 ### 連接端點
-- **URL**: `http://localhost:8080/ws`
+- **URL**: `http://localhost:53551/ws`
 - **協議**: STOMP over WebSocket
 - **SockJS 支援**: 是
 - **訂閱頻道**: `/topic/notification`

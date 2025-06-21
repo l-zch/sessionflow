@@ -38,14 +38,14 @@ SessionFlow 是一個任務管理系統，支援任務建立、工作階段追�
 
 您可以在執行時附加以下選項：
 
-- `--port <number>`: 指定應用程式運行的埠號 (預設: 8080)。
+- `--port <number>`: 指定應用程式運行的埠號 (預設: 53551)。
 - `--verbose`: 顯示執行的 SQL 查詢。
 - `--debug`: 顯示更詳細的日誌，用於偵錯。
 
 **範例:**
 ```bash
-# 在埠號 8081 上以偵錯模式啟動
-java -jar sessionflow.jar --port 8081 --debug
+# 在埠號 8080 上以偵錯模式啟動
+java -jar sessionflow.jar --port 8080 --debug
 ```
 
 ### Build from source
@@ -151,18 +151,18 @@ logging.level.org.hibernate.SQL=DEBUG
 ### 訪問應用
 
 應用程式啟動後，將在以下位址開啟服務：
-- **Web App**: http://localhost:8080/sessionflowapp
-- **API 文檔**: http://localhost:8080/swagger-ui.html
-- **H2 資料庫控制台**: http://localhost:8080/h2-console
+- **Web App**: http://localhost:53551/sessionflowapp
+- **API 文檔**: http://localhost:53551/swagger-ui.html
+- **H2 資料庫控制台**: http://localhost:53551/h2-console
 
-若使用 `--port` 選項，將 `8080` 替換為指定的埠號。
+若使用 `--port` 選項，將 `53551` 替換為指定的埠號。
 
 
 ### API 操作與 WebSocket 範例
 
 #### 建立任務
 ```bash
-curl -X POST http://localhost:8080/api/tasks \
+curl -X POST http://localhost:53551/api/tasks \
   -H "Content-Type: application/json" \
   -d '{
     "title": "完成專案文件",
@@ -173,7 +173,7 @@ curl -X POST http://localhost:8080/api/tasks \
 
 #### 查詢所有任務
 ```bash
-curl http://localhost:8080/api/tasks
+curl http://localhost:53551/api/tasks
 ```
 
 

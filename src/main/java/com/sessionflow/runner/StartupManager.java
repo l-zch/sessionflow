@@ -40,7 +40,7 @@ public class StartupManager {
             }
 
             // 3. Lock acquired, write PID and Port to lock file
-            String port = System.getProperty("server.port", "8080");
+            String port = System.getProperty("server.port", "53551");
             long pid = ProcessHandle.current().pid();
             String lockContent = pid + ":" + port;
 

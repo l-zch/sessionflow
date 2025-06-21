@@ -48,7 +48,7 @@ SessionFlow 是一個任務管理系統，支援任務建立、工作階段追�
 java -jar sessionflow.jar --port 8081 --debug
 ```
 
-## Build from source
+### Build from source
 
 ### 系統需求
 - **Java**: 17 或更高版本
@@ -57,10 +57,10 @@ java -jar sessionflow.jar --port 8081 --debug
 ### 從原始碼建置
 
 ###  **複製儲存庫**
-    ```bash
-    git clone https://github.com/l-zch/sessionflow.git
-    cd sessionflow
-    ```
+```bash
+git clone https://github.com/l-zch/sessionflow.git
+cd sessionflow
+```
 
 ### 編譯與執行
 
@@ -182,6 +182,6 @@ curl http://localhost:8080/api/tasks
 - [WebSocket 連接範例](https://github.com/l-zch/sessionflow/blob/main/resource/ws-example.html)
 
 
-### WebApp
+### Web App
 [source repo](https://github.com/l-zch/sessionflow-frontend)
-###### 部分功能尚未在 WebApp 實現
+###### 部分功能尚未在 Web App 實現

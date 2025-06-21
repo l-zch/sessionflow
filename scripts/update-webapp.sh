@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # A script to automatically download and update the webapp assets
-# from the latest release of the sessionflow-frontend GitHub repository.
+# from the latest release of the sessionflow-webapp GitHub repository.
 #
 # Dependencies: curl, jq, unzip
 # Usage: ./update-webapp.sh
 
 # --- Configuration ---
-REPO="l-zch/sessionflow-frontend"
+REPO="l-zch/sessionflow-webapp"
 API_URL="https://api.github.com/repos/$REPO/releases/latest"
 TARGET_DIR="src/main/resources/static/sessionflowapp"
 VERSION_FILE="$TARGET_DIR/version.txt"

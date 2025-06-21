@@ -192,5 +192,5 @@ curl http://localhost:53551/api/tasks
 
 
 ### Web App
-[source repo](https://github.com/l-zch/sessionflow-frontend)
+[source repo](https://github.com/l-zch/sessionflow-webapp)
 ###### 部分功能尚未在 Web App 實現

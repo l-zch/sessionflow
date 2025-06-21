@@ -24,12 +24,27 @@ SessionFlow 是一個任務管理系統，支援任務建立、工作階段追�
 
 ### Quick Start
 
-1.  **下載最新的 Release**
+#### 方法一：使用腳本自動下載
+
+開啟您的終端機，並執行以下指令。此指令將會自動從 GitHub 下載最新版本的 `sessionflow.jar` 到您當前的目錄：
+
+```bash
+curl -sL https://raw.githubusercontent.com/l-zch/sessionflow/main/scripts/download-latest-release.sh | bash
+```
+
+下載完成後，您就可以執行應用程式：
+```bash
+java -jar sessionflow.jar
+```
+
+#### 方法二：手動下載
+
+1.  **前往 Release 頁面**
     - 前往 [**GitHub Releases**](https://github.com/l-zch/sessionflow/releases/latest) 頁面。
     - 下載最新版本的 `sessionflow.jar` 檔案。
 
 2.  **執行應用程式**
-    - 在終端機中，切換到您下載 JAR 檔案的目錄，然後執行以下指令：
+    - 在您下載 `sessionflow.jar` 的目錄中，執行以下指令：
       ```bash
       java -jar sessionflow.jar
       ```
@@ -93,6 +108,12 @@ mvn clean package -DskipTests
 ```
 產生的檔案會在 `target/sessionflow.jar`
 
+### **實用指令**
+更新前端版本
+```bash
+./scripts/update-frontend.sh
+```
+
 ### 環境設定
 
 #### 資料庫配置
@@ -118,20 +139,7 @@ logging.level.org.hibernate.SQL=DEBUG
 
 ### 依賴與版本
 
-#### 核心依賴
-```xml
-<parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.3</version>
-</parent>
-<properties>
-    <java.version>17</java.version>
-    <lombok.version>1.18.30</lombok.version>
-</properties>
-```
-
-#### 主要依賴套件
+#### 主要套件
 - **Spring Boot 3.5.3**: 核心框架
 - **Spring Data JPA**: 資料持久化
 - **Spring Boot WebSocket**: WebSocket 支援

@@ -30,6 +30,7 @@ mvn spring-boot:run
 ```bash
 mvn test
 ```
+
 #### 覆蓋率報告
 ```bash
 mvn clean verify
@@ -41,7 +42,7 @@ open target/site/jacoco/index.html
 ```bash
 mvn clean package -DskipTests
 
-java -jar target/sessionflow-0.0.1-SNAPSHOT.jar
+java -jar target/sessionflow.jar
 ```
 
 ## 環境設定

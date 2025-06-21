@@ -187,8 +187,8 @@ curl http://localhost:53551/api/tasks
 
 
 #### WebSocket 連接範例
-- [WebSocket 文檔](resource/ws-doc.md)
-- [WebSocket 連接範例](resource/ws-example.html)
+- [WebSocket 文檔](docs/ws-doc.md)
+- [WebSocket 連接範例](docs/ws-example.html)
 
 
 ### Web App

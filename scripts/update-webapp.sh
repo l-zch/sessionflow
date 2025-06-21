@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# A script to automatically download and update the frontend assets
+# A script to automatically download and update the webapp assets
 # from the latest release of the sessionflow-frontend GitHub repository.
 #
 # Dependencies: curl, jq, unzip
-# Usage: ./update-frontend.sh
+# Usage: ./update-webapp.sh
 
 # --- Configuration ---
 REPO="l-zch/sessionflow-frontend"
@@ -48,7 +48,7 @@ check_command() {
 }
 
 # --- Main Script Logic ---
-log "${YELLOW}🚀 Starting frontend update process for repository: $REPO...${NC}"
+log "${YELLOW}🚀 Starting webapp update process for repository: $REPO...${NC}"
 
 # 1. Check for dependencies
 check_command curl
@@ -76,7 +76,7 @@ fi
 
 # 4. Get the latest release tag and compare with the local version
 LATEST_TAG=$(echo "$RELEASE_INFO" | jq -r '.tag_name')
-FRONTEND_RELEASE_URL=$(echo "$RELEASE_INFO" | jq -r '.html_url') # URL to the release page
+WEBAPP_RELEASE_URL=$(echo "$RELEASE_INFO" | jq -r '.html_url') # URL to the release page
 CURRENT_VERSION=""
 if [ -f "$VERSION_FILE" ]; then
     CURRENT_VERSION=$(cat "$VERSION_FILE")
@@ -84,12 +84,12 @@ fi
 
 # If in CI mode, output the discovered variables for GitHub Actions
 if [ "$CI_MODE" = true ]; then
-    echo "FRONTEND_VERSION=$LATEST_TAG"
-    echo "FRONTEND_RELEASE_URL=$FRONTEND_RELEASE_URL"
+    echo "WEBAPP_VERSION=$LATEST_TAG"
+    echo "WEBAPP_RELEASE_URL=$WEBAPP_RELEASE_URL"
 fi
 
 if [ "$LATEST_TAG" == "$CURRENT_VERSION" ]; then
-    log "${GREEN}✅ Frontend is already up to date (version $LATEST_TAG). Nothing to do.${NC}"
+    log "${GREEN}✅ Webapp is already up to date (version $LATEST_TAG). Nothing to do.${NC}"
     exit 0
 fi
 
@@ -105,7 +105,7 @@ fi
 log "✅ Found release asset for tag: ${GREEN}$LATEST_TAG${NC}"
 
 # 6. Download the release asset
-ZIP_FILE="$TMP_DIR/frontend.zip"
+ZIP_FILE="$TMP_DIR/webapp.zip"
 log "${YELLOW}⏬ Downloading asset...${NC}"
 curl -sL "$DOWNLOAD_URL" -o "$ZIP_FILE"
 
@@ -134,7 +134,7 @@ if [ ! -d "$SOURCE_PATH" ]; then
 fi
 
 # 9. Copy the new files to the target directory
-log "${YELLOW}🚚 Copying new frontend files to $TARGET_DIR...${NC}"
+log "${YELLOW}🚚 Copying new webapp files to $TARGET_DIR...${NC}"
 # Use `.` at the end of source path to copy contents, including hidden files.
 cp -r "$SOURCE_PATH"/. "$TARGET_DIR"/
 
@@ -142,6 +142,6 @@ cp -r "$SOURCE_PATH"/. "$TARGET_DIR"/
 log "${YELLOW}📝 Writing new version tag to $VERSION_FILE...${NC}"
 echo -n "$LATEST_TAG" > "$VERSION_FILE"
 
-log "\n${GREEN}🎉 Frontend update complete! Successfully updated to version $LATEST_TAG.${NC}"
+log "\n${GREEN}🎉 webapp update complete! Successfully updated to version $LATEST_TAG.${NC}"
 
 exit 0 

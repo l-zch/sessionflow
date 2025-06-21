@@ -25,11 +25,11 @@ jobs:
       - name: Install dependencies for update script
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Update frontend assets and capture version
-        id: update_frontend
+      - name: Update webapp assets and capture version
+        id: update_webapp
         run: |
-          chmod +x ./scripts/update-frontend.sh
-          ./scripts/update-frontend.sh --ci >> $GITHUB_ENV
+          chmod +x ./scripts/update-webapp.sh
+          ./scripts/update-webapp.sh --ci >> $GITHUB_ENV
 
       - name: Generate release notes
         run: |

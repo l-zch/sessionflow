@@ -75,6 +75,7 @@ java -jar sessionflow.jar --port 8080 --debug
 ```bash
 git clone https://github.com/l-zch/sessionflow.git
 cd sessionflow
+./scripts/update-webapp.sh
 ```
 
 ### 編譯與執行
@@ -109,9 +110,9 @@ mvn clean package -DskipTests
 產生的檔案會在 `target/sessionflow.jar`
 
 ### **實用指令**
-更新前端版本
+更新 Web App
 ```bash
-./scripts/update-frontend.sh
+./scripts/update-webapp.sh
 ```
 
 ### 環境設定
@@ -186,8 +187,8 @@ curl http://localhost:53551/api/tasks
 
 
 #### WebSocket 連接範例
-- [WebSocket 文檔](https://github.com/l-zch/sessionflow/blob/main/docs/ws-doc.md)
-- [WebSocket 連接範例](https://github.com/l-zch/sessionflow/blob/main/docs/ws-example.html)
+- [WebSocket 文檔](resource/ws-doc.md)
+- [WebSocket 連接範例](resource/ws-example.html)
 
 
 ### Web App

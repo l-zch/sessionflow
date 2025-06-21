@@ -3,9 +3,9 @@
 # Generates release notes markdown for the GitHub Action.
 #
 # This script reads the following environment variables, which should be
-# set by the 'update-frontend.sh --ci' step in the workflow:
-# - FRONTEND_VERSION: The version tag of the included frontend release.
-# - FRONTEND_RELEASE_URL: The URL to the frontend release page on GitHub.
+# set by the 'update-webapp.sh --ci' step in the workflow:
+# - FRONTEND_VERSION: The version tag of the included webapp release.
+# - FRONTEND_RELEASE_URL: The URL to the webapp release page on GitHub.
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
@@ -23,6 +23,6 @@ fi
 cat << EOF
 This is an automated release.
 
-This build incorporates frontend assets from the **[$FRONTEND_VERSION]($FRONTEND_RELEASE_URL)** release.
-The attached JAR file contains the built application with the updated frontend assets.
+This build incorporates webapp assets from the **[$WEBAPP_VERSION]($FRONTEND_RELEASE_URL)** release.
+The attached JAR file contains the built application with the updated webapp assets.
 EOF

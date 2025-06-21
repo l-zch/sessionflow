@@ -186,8 +186,8 @@ curl http://localhost:53551/api/tasks
 
 
 #### WebSocket 連接範例
-- [WebSocket 文檔](https://github.com/l-zch/sessionflow/blob/main/resource/ws-doc.md)
-- [WebSocket 連接範例](https://github.com/l-zch/sessionflow/blob/main/resource/ws-example.html)
+- [WebSocket 文檔](https://github.com/l-zch/sessionflow/blob/main/docs/ws-doc.md)
+- [WebSocket 連接範例](https://github.com/l-zch/sessionflow/blob/main/docs/ws-example.html)
 
 
 ### Web App

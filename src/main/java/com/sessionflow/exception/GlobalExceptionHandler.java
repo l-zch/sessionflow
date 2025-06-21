@@ -119,8 +119,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
         log.warn("Type conversion error: {}", ex.getMessage());
         
-        String message = String.format("Invalid value '%s' for parameter '%s'. Expected type: %s", 
-            ex.getValue(), ex.getName(), ex.getRequiredType().getSimpleName());
+        String message = "Invalid value '%s' for parameter '%s'. Expected type: %s".formatted(
+                ex.getValue(), ex.getName(), ex.getRequiredType().getSimpleName());
         
         ErrorResponse errorResponse = ErrorDefinition.TYPE_MISMATCH_ERROR.createResponse(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
@@ -130,7 +130,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
         log.warn("Missing request parameter: {}", ex.getMessage());
         
-        String message = String.format("Required parameter '%s' is missing", ex.getParameterName());
+        String message = "Required parameter '%s' is missing".formatted(ex.getParameterName());
         
         ErrorResponse errorResponse = ErrorDefinition.MISSING_PARAMETER.createResponse(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);

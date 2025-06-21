@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
                         .title("SessionFlow API")
@@ -25,7 +25,7 @@ public class OpenApiConfig {
     }
 
     @Bean
-    public OpenApiCustomizer errorExampleCustomizer() {
+    OpenApiCustomizer errorExampleCustomizer() {
         return openApi -> {
             Components components = openApi.getComponents();
             if (components == null) {

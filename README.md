@@ -123,7 +123,7 @@ logging.level.org.hibernate.SQL=DEBUG
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.6</version>
+    <version>3.5.3</version>
 </parent>
 <properties>
     <java.version>17</java.version>
@@ -132,7 +132,7 @@ logging.level.org.hibernate.SQL=DEBUG
 ```
 
 #### 主要依賴套件
-- **Spring Boot 3.4.6**: 核心框架
+- **Spring Boot 3.5.3**: 核心框架
 - **Spring Data JPA**: 資料持久化
 - **Spring Boot WebSocket**: WebSocket 支援
 - **Spring Boot Validation**: 資料驗證
@@ -141,7 +141,7 @@ logging.level.org.hibernate.SQL=DEBUG
 - **SpringDoc OpenAPI 2.7.0**: API 文檔自動生成
 
 #### 測試與工具
-- **JaCoCo 0.8.10**: 程式碼覆蓋率報告
+- **JaCoCo 0.8.13**: 程式碼覆蓋率報告
 - **Maven Surefire 3.1.2**: 測試執行
 - **Spring Boot Test**: 整合測試支援
 ---
@@ -184,4 +184,4 @@ curl http://localhost:8080/api/tasks
 
 ### WebApp
 [source repo](https://github.com/l-zch/sessionflow-frontend)
-###### 有些功能尚未在 WebApp 實現
+###### 部分功能尚未在 WebApp 實現

@@ -15,14 +15,14 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 @EnableAsync
 public class AsyncConfig {
-    
+
     /**
      * WebSocket 事件處理執行緒池
      * 
      * @return 執行緒池執行器
      */
     @Bean(name = "websocketEventExecutor")
-    public Executor websocketEventExecutor() {
+    Executor websocketEventExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
         executor.setMaxPoolSize(5);

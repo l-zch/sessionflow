@@ -68,14 +68,14 @@ public enum ErrorDefinition {
      * 生成 Swagger 範例 JSON
      */
     public String generateExample(String sampleDetails) {
-        return String.format("""
+        return """
             {
               "code": "%s",
               "message": "%s",
               "details": "%s",
               "timestamp": "2024-01-15T10:30:00"
             }
-            """, code, message, sampleDetails);
+            """.formatted(code, message, sampleDetails);
     }
     
     /**

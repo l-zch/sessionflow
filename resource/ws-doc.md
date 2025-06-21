@@ -93,7 +93,8 @@ interface SessionResponse {
     id: number;
     title: string;
     taskId?: number;
-    endReminder?: string;       // ISO 8601 格式
+    startTime: string;         // ISO 8601
+    endReminder?: string;       // ISO 8601
     note?: string;
 }
 ```
@@ -107,6 +108,18 @@ interface TagResponse {
 }
 ```
 
+#### SessionRecordResponse
+```typescript
+interface SessionRecordResponse {
+    id: number;
+    title: string;
+    taskId?: number;
+    startAt: string;         // ISO 8601
+    endAt: string;           // ISO 8601
+    plannedNote?: string;
+    completionNote?: string;
+}
+```
 ## 推播範例
 
 ### 1. 建立任務

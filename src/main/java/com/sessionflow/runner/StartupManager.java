@@ -24,6 +24,9 @@ public class StartupManager {
         Map<String, String> cliArgs = parseArguments(args);
         applyCliArguments(cliArgs);
 
+        // Check for web app assets before full startup
+        checkWebAppAssets();
+
         // 2. Attempt to acquire file lock
         try {
             File lockFile = new File(LOCK_FILE_NAME);
@@ -168,5 +171,22 @@ public class StartupManager {
         stream.println("  " + yellow + "API Docs:      " + nc + "http://localhost:" + port + "/swagger-ui.html");
         stream.println("  " + yellow + "H2 Console:    " + nc + "http://localhost:" + port + "/h2-console");
         stream.println("  " + yellow + "WebSocket URL: " + nc + "ws://localhost:" + port + "/ws");
+    }
+
+    private static void checkWebAppAssets() {
+        File webAppDir = new File("src/main/resources/static/sessionflowapp");
+        // This check is primarily for developers running from source after a fresh clone.
+        if (!webAppDir.exists() || !webAppDir.isDirectory() || webAppDir.list() == null || webAppDir.list().length == 0) {
+            String yellow = "\033[1;33m";
+            String nc = "\033[0m";
+            String cyan = "\033[0;36m";
+
+            System.out.println("\n" + yellow + "========================================================================" + nc);
+            System.out.println(yellow + "  ℹ️  Web application assets seem to be missing." + nc);
+            System.out.println(yellow + "      If you have just cloned the repository, you can download them" + nc);
+            System.out.println(yellow + "      by running the following command from the project root:" + nc);
+            System.out.println("        " + cyan + "./scripts/update-webapp.sh" + nc);
+            System.out.println(yellow + "========================================================================" + nc + "\n");
+        }
     }
 } 

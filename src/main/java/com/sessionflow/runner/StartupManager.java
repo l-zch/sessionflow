@@ -116,7 +116,6 @@ public class StartupManager {
                 channel.close();
                 raf.close();
                 lockFile.delete();
-                System.out.println("\nℹ️  SessionFlow shutting down. Lock file released and deleted.");
             } catch (IOException e) {
                 System.err.println("Error during shutdown hook: " + e.getMessage());
             }

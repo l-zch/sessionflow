@@ -2,9 +2,7 @@ package com.sessionflow.mapper.impl;
 
 import com.sessionflow.dto.SessionRecordResponse;
 import com.sessionflow.mapper.SessionRecordMapper;
-import com.sessionflow.model.Session;
 import com.sessionflow.model.SessionRecord;
-import com.sessionflow.model.Task;
 import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;

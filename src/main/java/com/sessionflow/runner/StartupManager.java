@@ -1,6 +1,5 @@
 package com.sessionflow.runner;
 
-import com.sessionflow.SessionFlowApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.context.WebServerApplicationContext;

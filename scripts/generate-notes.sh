@@ -23,6 +23,5 @@ fi
 cat << EOF
 This is an automated release.
 
-This build incorporates webapp assets from the **[$WEBAPP_VERSION]($WEBAPP_RELEASE_URL)** release.
-The attached JAR file contains the built application with the updated webapp assets.
+This build includes the webapp from the **[$WEBAPP_VERSION]($WEBAPP_RELEASE_URL)** release.
 EOF

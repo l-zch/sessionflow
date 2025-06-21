@@ -51,6 +51,7 @@ public class WebConfig implements WebMvcConfigurer {
                         if (resourcePath.startsWith("api/") || 
                             resourcePath.startsWith("swagger-ui") || 
                             resourcePath.startsWith("h2-console") ||
+                            resourcePath.startsWith("ws") ||
                             resourcePath.startsWith("actuator/")) {
                             return null;
                         }

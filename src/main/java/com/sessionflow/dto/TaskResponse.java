@@ -1,6 +1,7 @@
 package com.sessionflow.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,12 +14,15 @@ import java.util.List;
 @Schema(description = "任務回應")
 public class TaskResponse {
     
+    @NotNull
     @Schema(description = "任務 ID", example = "1", nullable = false)
     private Long id;
     
+    @NotNull
     @Schema(description = "任務標題", example = "完成專案文件", nullable = false)
     private String title;
     
+    @NotNull
     @Schema(description = "標籤列表", nullable = false)
     private List<TagResponse> tags;
     
@@ -31,6 +35,7 @@ public class TaskResponse {
     @Schema(description = "任務備註", example = "需要包含技術規格和使用者手冊", nullable = true)
     private String note;
     
+    @NotNull
     @Schema(description = "任務狀態", example = "PENDING", allowableValues = {"PENDING", "COMPLETE"}, nullable = false)
     private String status;
     

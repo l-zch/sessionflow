@@ -55,7 +55,7 @@ class TaskRepositoryIntegrationTest {
         // Given
         Task task = new Task("完成專案文件");
         task.setNote("需要包含技術規格");
-        task.setDueTime(LocalDateTime.now().plusDays(7));
+        task.setDueAt(LocalDateTime.now().plusDays(7));
         
         // 重新查詢 Tag 以避免分離實體問題
         Tag workTagFromDb = tagRepository.findById(workTag.getId()).orElseThrow();
@@ -167,7 +167,7 @@ class TaskRepositoryIntegrationTest {
         // When
         savedTask.setTitle("更新後標題");
         savedTask.setNote("更新後備註");
-        savedTask.setDueTime(LocalDateTime.now().plusDays(3));
+        savedTask.setDueAt(LocalDateTime.now().plusDays(3));
         savedTask.getTags().add(urgentTag);
         
         Task updatedTask = taskRepository.save(savedTask);
@@ -176,7 +176,7 @@ class TaskRepositoryIntegrationTest {
         // Then
         assertThat(updatedTask.getTitle()).isEqualTo("更新後標題");
         assertThat(updatedTask.getNote()).isEqualTo("更新後備註");
-        assertThat(updatedTask.getDueTime()).isNotNull();
+        assertThat(updatedTask.getDueAt()).isNotNull();
         assertThat(updatedTask.getTags()).contains(urgentTag);
         assertThat(updatedTask.getUpdatedAt()).isAfter(originalUpdatedAt);
         assertThat(updatedTask.getCreatedAt()).isEqualTo(savedTask.getCreatedAt());

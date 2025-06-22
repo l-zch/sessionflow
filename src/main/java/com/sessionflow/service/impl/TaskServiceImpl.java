@@ -91,7 +91,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 將更新邏輯移至 Service 層
         existingTask.setTitle(taskRequest.getTitle());
-        existingTask.setDueTime(taskRequest.getDueTime());
+        existingTask.setDueAt(taskRequest.getDueAt());
         existingTask.setNote(taskRequest.getNote());
 
         // 更新標籤關聯

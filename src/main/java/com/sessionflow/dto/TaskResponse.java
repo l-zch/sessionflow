@@ -27,7 +27,7 @@ public class TaskResponse {
     private List<TagResponse> tags;
     
     @Schema(description = "截止時間", example = "2024-01-15T18:00:00", nullable = true)
-    private LocalDateTime dueTime;
+    private LocalDateTime dueAt;
     
     @Schema(description = "完成時間", example = "2024-01-14T16:30:00", nullable = true)
     private LocalDateTime completedAt;

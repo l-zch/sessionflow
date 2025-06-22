@@ -332,11 +332,11 @@ class TaskControllerTest {
         // Given
         TaskRequest request = new TaskRequest("有標籤的任務");
         request.setTagIds(List.of(1L, 2L));
-        request.setDueTime(LocalDateTime.of(2024, 1, 15, 18, 0));
+        request.setDueAt(LocalDateTime.of(2024, 1, 15, 18, 0));
         request.setNote("重要任務備註");
         
         TaskResponse response = new TaskResponse(1L, "有標籤的任務", "PENDING");
-        response.setDueTime(LocalDateTime.of(2024, 1, 15, 18, 0));
+        response.setDueAt(LocalDateTime.of(2024, 1, 15, 18, 0));
         response.setNote("重要任務備註");
         
         when(taskService.createTask(any(TaskRequest.class))).thenReturn(response);
@@ -349,7 +349,7 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("有標籤的任務"))
                 .andExpect(jsonPath("$.status").value("PENDING"))
-                .andExpect(jsonPath("$.dueTime").value("2024-01-15T18:00:00"))
+                .andExpect(jsonPath("$.dueAt").value("2024-01-15T18:00:00"))
                 .andExpect(jsonPath("$.note").value("重要任務備註"));
         
         verify(taskService).createTask(any(TaskRequest.class));

@@ -176,7 +176,7 @@ curl -X POST http://localhost:53551/api/tasks \
   -d '{
     "title": "完成專案文件",
     "note": "包含技術規格和使用者手冊",
-    "dueTime": "2024-01-15T18:00:00"
+    "dueAt": "2024-01-15T18:00:00"
   }'
 ```
 

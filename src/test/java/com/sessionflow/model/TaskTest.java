@@ -218,31 +218,31 @@ class TaskTest {
     }
 
     @Test
-    @DisplayName("Should handle due time correctly")
-    void shouldHandleDueTimeCorrectly() {
+    @DisplayName("Should handle dueAt correctly")
+    void shouldHandleDueAtCorrectly() {
         // Given
         task.setTitle("Test Task");
-        LocalDateTime dueTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime dueAt = LocalDateTime.now().plusDays(1);
 
         // When
-        task.setDueTime(dueTime);
+        task.setDueAt(dueAt);
 
         // Then
-        assertEquals(dueTime, task.getDueTime());
+        assertEquals(dueAt, task.getDueAt());
     }
 
     @Test
-    @DisplayName("Should handle null due time")
-    void shouldHandleNullDueTime() {
+    @DisplayName("Should handle null dueAt")
+    void shouldHandleNullDueAt() {
         // Given
         task.setTitle("Test Task");
-        task.setDueTime(null);
+        task.setDueAt(null);
 
         // When
         Set<ConstraintViolation<Task>> violations = validator.validate(task);
 
         // Then
-        assertTrue(violations.isEmpty()); // null due time should be allowed
-        assertNull(task.getDueTime());
+        assertTrue(violations.isEmpty()); // null dueAt should be allowed
+        assertNull(task.getDueAt());
     }
 }

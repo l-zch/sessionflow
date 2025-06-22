@@ -59,13 +59,13 @@ class TaskMapperImplTest {
         taskRequest = new TaskRequest();
         taskRequest.setTitle("完成專案文件");
         taskRequest.setTagIds(List.of(1L, 2L));
-        taskRequest.setDueTime(LocalDateTime.of(2024, 1, 15, 18, 0));
+        taskRequest.setDueAt(LocalDateTime.of(2024, 1, 15, 18, 0));
         taskRequest.setNote("需要包含技術規格和使用者手冊");
 
         // 建立測試用的 Task
         task = new Task("完成專案文件");
         task.setId(1L);
-        task.setDueTime(LocalDateTime.of(2024, 1, 15, 18, 0));
+        task.setDueAt(LocalDateTime.of(2024, 1, 15, 18, 0));
         task.setNote("需要包含技術規格和使用者手冊");
         task.setStatus(TaskStatus.PENDING);
         task.setCreatedAt(LocalDateTime.of(2024, 1, 10, 10, 0));
@@ -86,7 +86,7 @@ class TaskMapperImplTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("完成專案文件");
-        assertThat(result.getDueTime()).isEqualTo(LocalDateTime.of(2024, 1, 15, 18, 0));
+        assertThat(result.getDueAt()).isEqualTo(LocalDateTime.of(2024, 1, 15, 18, 0));
         assertThat(result.getNote()).isEqualTo("需要包含技術規格和使用者手冊");
         assertThat(result.getStatus()).isEqualTo(TaskStatus.PENDING); // 預設狀態
         assertThat(result.getTags()).hasSize(2);
@@ -111,7 +111,7 @@ class TaskMapperImplTest {
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("簡單任務");
         assertThat(result.getNote()).isEqualTo("無標籤的任務");
-        assertThat(result.getDueTime()).isNull();
+        assertThat(result.getDueAt()).isNull();
         assertThat(result.getTags()).isEmpty();
 
         verify(tagRepository, never()).findById(any());
@@ -180,7 +180,7 @@ class TaskMapperImplTest {
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("完成專案文件");
-        assertThat(result.getDueTime()).isEqualTo(LocalDateTime.of(2024, 1, 15, 18, 0));
+        assertThat(result.getDueAt()).isEqualTo(LocalDateTime.of(2024, 1, 15, 18, 0));
         assertThat(result.getNote()).isEqualTo("需要包含技術規格和使用者手冊");
         assertThat(result.getStatus()).isEqualTo("PENDING");
         assertThat(result.getTags()).hasSize(2);

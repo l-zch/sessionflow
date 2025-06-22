@@ -24,7 +24,7 @@ public class TaskRequest {
     private List<Long> tagIds;
     
     @Schema(description = "截止時間", example = "2024-01-15T18:00:00")
-    private LocalDateTime dueTime;
+    private LocalDateTime dueAt;
     
     @Size(max = 2000, message = "Task note cannot exceed 2000 characters")
     @Schema(description = "任務備註", example = "需要包含技術規格和使用者手冊")

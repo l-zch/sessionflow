@@ -73,7 +73,7 @@ class SystemIntegrationTest {
                 // 2. 創建任務（關聯標籤）
                 TaskRequest taskRequest = new TaskRequest("完成專案報告");
                 taskRequest.setNote("需要包含技術架構和測試結果");
-                taskRequest.setDueTime(LocalDateTime.now().plusDays(7));
+                taskRequest.setDueAt(LocalDateTime.now().plusDays(7));
                 taskRequest.setTagIds(List.of(createdTag.getId()));
 
                 TaskResponse createdTask = taskService.createTask(taskRequest);

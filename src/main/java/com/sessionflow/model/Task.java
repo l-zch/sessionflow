@@ -29,8 +29,8 @@ public class Task {
     @Column(nullable = false)
     private String title;
     
-    @Column(name = "due_time")
-    private LocalDateTime dueTime;
+    @Column(name = "due_at")
+    private LocalDateTime dueAt;
     
     @Column(name = "completed_at")
     private LocalDateTime completedAt;

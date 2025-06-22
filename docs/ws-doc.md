@@ -80,7 +80,7 @@ interface TaskResponse {
     id: number;
     title: string;
     tags: TagResponse[];
-    dueTime?: string;           // ISO 8601 格式
+    dueAt?: string;           // ISO 8601 格式
     completedAt?: string;       // ISO 8601 格式
     note?: string;
     status: "PENDING" | "COMPLETE";
@@ -138,7 +138,7 @@ interface SessionRecordResponse {
                 "color": "#FF5722"
             }
         ],
-        "dueTime": "2024-01-15T18:00:00",
+        "dueAt": "2024-01-15T18:00:00",
         "completedAt": null,
         "note": "需要包含技術規格和使用者手冊",
         "status": "PENDING"
@@ -164,7 +164,7 @@ interface SessionRecordResponse {
                 "color": "#FF5722"
             }
         ],
-        "dueTime": "2024-01-15T18:00:00",
+        "dueAt": "2024-01-15T18:00:00",
         "completedAt": "2024-01-14T16:30:00",
         "note": "需要包含技術規格和使用者手冊",
         "status": "COMPLETE"

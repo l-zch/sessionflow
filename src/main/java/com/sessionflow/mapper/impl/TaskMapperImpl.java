@@ -31,7 +31,7 @@ public class TaskMapperImpl implements TaskMapper {
         }
         
         Task task = new Task(taskRequest.getTitle());
-        task.setDueTime(taskRequest.getDueTime());
+        task.setDueAt(taskRequest.getDueAt());
         task.setNote(taskRequest.getNote());
         
         // 處理標籤關聯
@@ -55,7 +55,7 @@ public class TaskMapperImpl implements TaskMapper {
         TaskResponse response = new TaskResponse();
         response.setId(task.getId());
         response.setTitle(task.getTitle());
-        response.setDueTime(task.getDueTime());
+        response.setDueAt(task.getDueAt());
         response.setCompletedAt(task.getCompletedAt());
         response.setNote(task.getNote());
         response.setStatus(task.getStatus().getValue());

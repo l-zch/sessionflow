@@ -26,7 +26,7 @@ public class SessionResponse {
     
     @NotNull
     @Schema(description = "開始時間", example = "2024-01-15T14:00:00", nullable = false)
-    private LocalDateTime startTime;
+    private LocalDateTime startAt;
     
     @Schema(description = "結束提醒時間", example = "2024-01-15T16:00:00", nullable = true)
     private LocalDateTime endReminder;

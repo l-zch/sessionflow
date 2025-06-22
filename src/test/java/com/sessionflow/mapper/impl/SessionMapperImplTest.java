@@ -51,7 +51,7 @@ class SessionMapperImplTest {
         session = new Session("專案開發時間");
         session.setId(1L);
         session.setTask(task);
-        session.setStartTime(LocalDateTime.of(2024, 1, 15, 14, 0));
+        session.setStartAt(LocalDateTime.of(2024, 1, 15, 14, 0));
         session.setEndReminder(LocalDateTime.of(2024, 1, 15, 16, 0));
         session.setNote("專注於核心功能開發");
     }
@@ -137,7 +137,7 @@ class SessionMapperImplTest {
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("專案開發時間");
         assertThat(result.getTaskId()).isEqualTo(1L);
-        assertThat(result.getStartTime()).isEqualTo(LocalDateTime.of(2024, 1, 15, 14, 0));
+        assertThat(result.getStartAt()).isEqualTo(LocalDateTime.of(2024, 1, 15, 14, 0));
         assertThat(result.getEndReminder()).isEqualTo(LocalDateTime.of(2024, 1, 15, 16, 0));
         assertThat(result.getNote()).isEqualTo("專注於核心功能開發");
     }
@@ -149,8 +149,8 @@ class SessionMapperImplTest {
         Session sessionWithoutTask = new Session("簡單工作階段");
         sessionWithoutTask.setId(2L);
         sessionWithoutTask.setNote("無任務關聯");
-        // startTime 會在建構時自動設定，這裡手動設定以便測試
-        sessionWithoutTask.setStartTime(LocalDateTime.of(2024, 1, 15, 15, 0));
+        // startAt 會在建構時自動設定，這裡手動設定以便測試
+        sessionWithoutTask.setStartAt(LocalDateTime.of(2024, 1, 15, 15, 0));
 
         // When
         SessionResponse result = sessionMapper.toResponse(sessionWithoutTask);
@@ -160,7 +160,7 @@ class SessionMapperImplTest {
         assertThat(result.getId()).isEqualTo(2L);
         assertThat(result.getTitle()).isEqualTo("簡單工作階段");
         assertThat(result.getTaskId()).isNull();
-        assertThat(result.getStartTime()).isEqualTo(LocalDateTime.of(2024, 1, 15, 15, 0));
+        assertThat(result.getStartAt()).isEqualTo(LocalDateTime.of(2024, 1, 15, 15, 0));
         assertThat(result.getNote()).isEqualTo("無任務關聯");
         assertThat(result.getEndReminder()).isNull();
     }

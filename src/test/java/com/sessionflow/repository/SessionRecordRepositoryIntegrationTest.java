@@ -52,10 +52,10 @@ class SessionRecordRepositoryIntegrationTest {
     @DisplayName("成功建立 SessionRecord")
     void shouldCreateSessionRecordSuccessfully() {
         // Given
-        LocalDateTime startTime = baseTime;
+        LocalDateTime startAt = baseTime;
         LocalDateTime endTime = baseTime.plusHours(2);
         
-        SessionRecord record = new SessionRecord("專案開發紀錄", startTime, endTime);
+        SessionRecord record = new SessionRecord("專案開發紀錄", startAt, endTime);
         record.setTask(testTask);
         record.setPlannedNote("計畫完成核心功能");
         record.setCompletionNote("成功完成 80% 的功能");
@@ -67,7 +67,7 @@ class SessionRecordRepositoryIntegrationTest {
         // Then
         assertThat(savedRecord.getId()).isNotNull();
         assertThat(savedRecord.getTitle()).isEqualTo("專案開發紀錄");
-        assertThat(savedRecord.getStartAt()).isEqualTo(startTime);
+        assertThat(savedRecord.getStartAt()).isEqualTo(startAt);
         assertThat(savedRecord.getEndAt()).isEqualTo(endTime);
         assertThat(savedRecord.getTask()).isNotNull();
         assertThat(savedRecord.getTask().getId()).isEqualTo(testTask.getId());
@@ -82,10 +82,10 @@ class SessionRecordRepositoryIntegrationTest {
     @DisplayName("建立不關聯任務的 SessionRecord")
     void shouldCreateSessionRecordWithoutTask() {
         // Given
-        LocalDateTime startTime = baseTime;
+        LocalDateTime startAt = baseTime;
         LocalDateTime endTime = baseTime.plusMinutes(30);
         
-        SessionRecord record = new SessionRecord("獨立工作紀錄", startTime, endTime);
+        SessionRecord record = new SessionRecord("獨立工作紀錄", startAt, endTime);
         record.setCompletionNote("完成了一些雜項工作");
 
         // When
@@ -375,10 +375,10 @@ class SessionRecordRepositoryIntegrationTest {
     @DisplayName("計算工作時長")
     void shouldCalculateDuration() {
         // Given
-        LocalDateTime startTime = baseTime;
+        LocalDateTime startAt = baseTime;
         LocalDateTime endTime = baseTime.plusHours(2).plusMinutes(30);
         
-        SessionRecord record = new SessionRecord("時長測試", startTime, endTime);
+        SessionRecord record = new SessionRecord("時長測試", startAt, endTime);
         SessionRecord savedRecord = sessionRecordRepository.save(record);
         entityManager.flush();
 

@@ -93,7 +93,7 @@ interface SessionResponse {
     id: number;
     title: string;
     taskId?: number;
-    startTime: string;         // ISO 8601
+    startAt: string;         // ISO 8601
     endReminder?: string;       // ISO 8601
     note?: string;
 }

@@ -54,7 +54,7 @@ public class SessionMapperImpl implements SessionMapper {
         SessionResponse response = new SessionResponse();
         response.setId(session.getId());
         response.setTitle(session.getTitle());
-        response.setStartTime(session.getStartTime());
+        response.setStartAt(session.getStartAt());
         response.setEndReminder(session.getEndReminder());
         response.setNote(session.getNote());
         

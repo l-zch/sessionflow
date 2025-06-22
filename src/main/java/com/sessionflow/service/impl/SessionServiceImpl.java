@@ -82,7 +82,7 @@ public class SessionServiceImpl implements SessionService {
         // 業務邏輯：直接在此創建 SessionRecord 實體
         SessionRecord sessionRecord = new SessionRecord();
         sessionRecord.setTitle(session.getTitle());
-        sessionRecord.setStartAt(session.getStartTime());
+        sessionRecord.setStartAt(session.getStartAt());
         sessionRecord.setEndAt(LocalDateTime.now()); // 結束時間由業務邏輯定義
         sessionRecord.setPlannedNote(session.getNote());
         sessionRecord.setCompletionNote(request.getCompletionNote());

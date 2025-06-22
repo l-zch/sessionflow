@@ -38,7 +38,7 @@ class SessionRecordMapperImplTest {
         session.setId(1L);
         session.setTask(task);
         session.setNote("專注於核心功能開發");
-        session.setStartTime(LocalDateTime.of(2024, 1, 15, 9, 0)); // 明確設定 startTime
+        session.setStartAt(LocalDateTime.of(2024, 1, 15, 9, 0)); // 明確設定 startAt
 
         // 建立測試用的 SessionRecord
         sessionRecord = new SessionRecord(

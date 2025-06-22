@@ -30,9 +30,9 @@ public class Session {
     @JoinColumn(name = "task_id")
     private Task task;
     
-    @NotNull(message = "Start time cannot be null")
-    @Column(name = "start_time", nullable = false)
-    private LocalDateTime startTime;
+    @NotNull(message = "Start at cannot be null")
+    @Column(name = "start_at", nullable = false)
+    private LocalDateTime startAt;
     
     @Column(name = "end_reminder")
     private LocalDateTime endReminder;
@@ -49,7 +49,7 @@ public class Session {
     // Custom constructor
     public Session(String title) {
         this.title = title;
-        this.startTime = LocalDateTime.now(); // 業務邏輯：session 建立時即開始
+        this.startAt = LocalDateTime.now(); // 業務邏輯：session 建立時即開始
     }
     
     // Lifecycle methods

@@ -70,7 +70,7 @@ class SessionServiceImplTest {
         sessionResponse = new SessionResponse();
         sessionResponse.setId(1L);
         sessionResponse.setTitle("專案開發時間");
-        sessionResponse.setStartTime(LocalDateTime.of(2024, 1, 15, 14, 0));
+        sessionResponse.setStartAt(LocalDateTime.of(2024, 1, 15, 14, 0));
         sessionResponse.setNote("專注於核心功能開發");
         
         recordCreateRequest = new SessionRecordCreateRequest();
@@ -138,8 +138,8 @@ class SessionServiceImplTest {
     void endSession_Success() {
         // Given
         Long sessionId = 1L;
-        // 設定 session 的 startTime
-        session.setStartTime(LocalDateTime.of(2024, 1, 15, 9, 0));
+        // 設定 session 的 startAt
+        session.setStartAt(LocalDateTime.of(2024, 1, 15, 9, 0));
 
         when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
         when(sessionRecordRepository.save(any(SessionRecord.class))).thenReturn(sessionRecord);
@@ -161,7 +161,7 @@ class SessionServiceImplTest {
         assertThat(capturedRecord.getTitle()).isEqualTo(session.getTitle());
         assertThat(capturedRecord.getPlannedNote()).isEqualTo(session.getNote());
         assertThat(capturedRecord.getCompletionNote()).isEqualTo(recordCreateRequest.getCompletionNote());
-        assertThat(capturedRecord.getStartAt()).isEqualTo(session.getStartTime());
+        assertThat(capturedRecord.getStartAt()).isEqualTo(session.getStartAt());
         assertThat(capturedRecord.getTask()).isEqualTo(session.getTask());
         assertThat(capturedRecord.getEndAt()).isBeforeOrEqualTo(LocalDateTime.now());
 

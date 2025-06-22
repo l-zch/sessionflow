@@ -198,7 +198,7 @@ class ScheduleEntryServiceImplTest {
 
     @Test
     @DisplayName("建立排程失敗 - 結束時間早於開始時間")
-    void createScheduleEntry_EndTimeBeforeStartTime_ShouldThrowException() {
+    void createScheduleEntry_EndTimeBeforestartAt_ShouldThrowException() {
         // Given
         validRequest.setEndAt(LocalDateTime.of(2024, 1, 15, 9, 0)); // 早於開始時間
 
@@ -213,7 +213,7 @@ class ScheduleEntryServiceImplTest {
 
     @Test
     @DisplayName("建立排程失敗 - 結束時間等於開始時間")
-    void createScheduleEntry_EndTimeEqualsStartTime_ShouldThrowException() {
+    void createScheduleEntry_EndTimeEqualsstartAt_ShouldThrowException() {
         // Given
         LocalDateTime sameTime = LocalDateTime.of(2024, 1, 15, 10, 0);
         validRequest.setStartAt(sameTime);
@@ -350,7 +350,7 @@ class ScheduleEntryServiceImplTest {
 
     @Test
     @DisplayName("更新排程失敗 - 結束時間等於開始時間")
-    void updateScheduleEntry_EndTimeEqualsStartTime_ShouldThrowException() {
+    void updateScheduleEntry_EndTimeEqualsstartAt_ShouldThrowException() {
         // Given
         Long scheduleId = 1L;
         ScheduleEntryRequest invalidRequest = new ScheduleEntryRequest();
